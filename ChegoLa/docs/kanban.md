@@ -2,6 +2,16 @@
 
 Fluxo: `Backlog → Ready → In progress → In review → Done`. A ordem numérica define a prioridade. Limite recomendado: um cartão em **In progress**.
 
+## Criar o quadro no GitHub
+
+No Windows, siga [`usar-script-kanban.md`](usar-script-kanban.md) e execute:
+
+```powershell
+pwsh -File .\scripts\criar-kanban.ps1
+```
+
+O script cria ou reutiliza o GitHub Project pessoal, evita cartões duplicados e não apaga conteúdo existente.
+
 ## Done
 
 ### 01 — Base oficial e identidade visual
@@ -54,28 +64,40 @@ Fluxo: `Backlog → Ready → In progress → In review → Done`. A ordem numé
 **Semana:** 2 · **Ordem:** 11  
 **Aceite:** fonte e responsável pelos riscos; regra de aprovação; campos públicos e privados; frequência de atualização; processo de correção e remoção.
 
+### 12 — Consolidar feedback da primeira demonstração
+**Semana:** 2 · **Ordem:** 12
+**Aceite:** feedback reunido em lista única; itens classificados e priorizados; novas funções mantidas no Backlog até aprovação.
+
+### 13 — Preparar checklist da segunda demonstração
+**Semana:** 2 · **Ordem:** 13
+**Aceite:** fluxo principal testado em desktop e celular; funções simuladas e decisões pendentes explícitas; README e próximos cartões atualizados.
+
 ## Backlog
 
-### 12 — Definir mapa-base e licença
-**Semana:** 3 · **Ordem:** 12  
+### 14 — Definir mapa-base e licença
+**Semana:** 3 · **Ordem:** 14
 **Aceite:** provedor, atribuição, licença, limites, custos e cobertura de Itaúna documentados; responsável pela conta definido.
 
-### 13 — Avaliar geocodificação e rotas
-**Semana:** 3 · **Ordem:** 13  
+### 15 — Avaliar geocodificação e rotas
+**Semana:** 3 · **Ordem:** 15
 **Aceite:** comparar ao menos duas opções; custos e limites registrados; decidir se o produto alerta ou tenta evitar riscos; texto de limitação aprovado.
 
-### 14 — Desenhar modelo de dados
-**Semana:** 3 · **Ordem:** 14  
+### 16 — Desenhar modelo de dados
+**Semana:** 3 · **Ordem:** 16
 **Aceite:** campos, tipos, status de moderação e retenção documentados; dados sensíveis separados; modelo revisado antes de criar infraestrutura.
 
-### 15 — Definir mídia, privacidade e abuso
-**Semana:** 3 · **Ordem:** 15  
+### 17 — Definir mídia, privacidade e abuso
+**Semana:** 3 · **Ordem:** 17
 **Aceite:** formatos, tamanho, retenção, consentimento, conteúdo proibido, antispam e responsável operacional definidos.
 
-### 16 — Prova técnica das integrações aprovadas
-**Semana:** 3 · **Ordem:** 16  
+### 18 — Planejar segurança e ambientes
+**Semana:** 3 · **Ordem:** 18
+**Aceite:** variáveis públicas e secretas diferenciadas; ambientes de desenvolvimento e produção planejados; políticas de acesso necessárias listadas.
+
+### 19 — Prova técnica das integrações aprovadas
+**Semana:** 3 · **Ordem:** 19
 **Aceite:** somente após cartões 11–15; ambiente de desenvolvimento separado; falhas externas tratadas; nenhum segredo no cliente; documentação atualizada.
 
-### 17 — Checklist da terceira demonstração
-**Semana:** 3 · **Ordem:** 17  
+### 20 — Checklist da terceira demonstração
+**Semana:** 3 · **Ordem:** 20
 **Aceite:** fluxos testados em desktop e celular; funções reais e simuladas listadas; decisões pendentes visíveis; Backlog repriorizado com a equipe.
