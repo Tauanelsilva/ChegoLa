@@ -1,11 +1,12 @@
 # Como criar o Kanban no GitHub
 
-O script [`scripts/criar-kanban.ps1`](../scripts/criar-kanban.ps1) cria ou reutiliza o projeto pessoal **Chegolá? — Desenvolvimento do MVP** na conta `TauanelSilva`, adiciona 20 cartões sem repetir títulos e organiza:
+O script [`scripts/criar-kanban.ps1`](../scripts/criar-kanban.ps1) cria ou reutiliza o projeto pessoal **Chegolá? — Desenvolvimento do MVP** na conta `TauanelSilva`, vincula esse Project ao repositório `TauanelSilva/ChegoLa`, adiciona 20 cartões sem repetir títulos e organiza:
 
 - semana 1 em **Ready**;
 - semanas 2 e 3 em **Backlog**.
 
 Ele não apaga projetos, campos ou cartões existentes e nunca lê nem imprime o token.
+Se o Project já estiver vinculado ao repositório, o vínculo é preservado e a execução continua normalmente.
 
 ## Pré-requisitos no Windows
 
@@ -57,6 +58,7 @@ Nenhum token precisa ser copiado, colado ou colocado no script.
 Ao final, o terminal mostra a URL do Project. Executar novamente é seguro:
 
 - o projeto é localizado pelo título exato;
+- o Project aparece na aba **Projects** do repositório `TauanelSilva/ChegoLa`;
 - cartões são localizados pelo título exato;
 - somente cartões ausentes são criados;
 - os cartões das semanas 1, 2 e 3 voltam aos estados planejados.

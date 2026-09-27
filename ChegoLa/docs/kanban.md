@@ -10,7 +10,7 @@ No Windows, siga [`usar-script-kanban.md`](usar-script-kanban.md) e execute:
 pwsh -File .\scripts\criar-kanban.ps1
 ```
 
-O script cria ou reutiliza o GitHub Project pessoal, evita cartões duplicados e não apaga conteúdo existente.
+O script cria ou reutiliza o GitHub Project pessoal, evita cartões duplicados e não apaga conteúdo existente. A posição deste arquivo registra o estado funcional atual; o script aplica o planejamento inicial das três semanas.
 
 ## Done
 
@@ -24,19 +24,31 @@ O script cria ou reutiliza o GitHub Project pessoal, evita cartões duplicados e
 
 ### 03 — Mapa demonstrativo
 **Semana:** 1 · **Ordem:** 3  
-**Aceite:** visual convincente de Itaúna; marcadores, legenda e controles; origem/destino validados; carregamento, resultado e erro simulados; nenhuma promessa de rota segura.
+**Aceite:** MapLibre com mapa público e atribuição; ocorrências locais como marcadores; rota OSRM com geocodificação, carregamento e erro; alerta de proximidade sem promessa de rota segura.
 
 ### 04 — Ocorrências simuladas
 **Semana:** 1 · **Ordem:** 4  
-**Aceite:** cartões mostram local, região, risco e atualização; dados são identificados como fictícios; estados com dados, carregando, vazio e erro podem ser testados.
+**Aceite:** cartões tipados mostram local, região, risco e origem; dados iniciais e relatos locais são diferenciados; busca, filtros e estados carregando, vazio e erro implementados.
 
 ### 05 — Formulário demonstrativo
 **Semana:** 1 · **Ordem:** 5  
-**Aceite:** local, data, hora, descrição e mídia; limite de 500 caracteres e 50 MB; mensagens acessíveis; envio simula sucesso e erro; nenhum dado é armazenado.
+**Aceite:** local, região, risco, data, hora, descrição e mídia validados; endereço geocodificado; ocorrência salva no localStorage e exibida na lista e no mapa; mídia não armazenada.
 
 ### 06 — Documentação e verificação inicial
 **Semana:** 1 · **Ordem:** 6  
 **Aceite:** README, prompt mestre e Kanban atualizados; lint e build passam; execução local documentada.
+
+### 14 — Definir mapa-base e licença
+**Semana:** 3 · **Ordem:** 14
+**Aceite:** OpenFreeMap/MapLibre e atribuição OpenStreetMap identificados; uso demonstrativo e dependência de serviço público documentados.
+
+### 15 — Avaliar geocodificação e rotas
+**Semana:** 3 · **Ordem:** 15
+**Aceite:** Nominatim e OSRM usados sem chaves; limites e indisponibilidade comunicados; rota identificada explicitamente como não segura.
+
+### 19 — Prova técnica das integrações aprovadas
+**Semana:** 3 · **Ordem:** 19
+**Aceite:** mapa, geocodificação e rota públicos integrados; falhas externas tratadas sem inventar resultados; nenhum segredo no cliente.
 
 ## In review
 
@@ -74,14 +86,6 @@ O script cria ou reutiliza o GitHub Project pessoal, evita cartões duplicados e
 
 ## Backlog
 
-### 14 — Definir mapa-base e licença
-**Semana:** 3 · **Ordem:** 14
-**Aceite:** provedor, atribuição, licença, limites, custos e cobertura de Itaúna documentados; responsável pela conta definido.
-
-### 15 — Avaliar geocodificação e rotas
-**Semana:** 3 · **Ordem:** 15
-**Aceite:** comparar ao menos duas opções; custos e limites registrados; decidir se o produto alerta ou tenta evitar riscos; texto de limitação aprovado.
-
 ### 16 — Desenhar modelo de dados
 **Semana:** 3 · **Ordem:** 16
 **Aceite:** campos, tipos, status de moderação e retenção documentados; dados sensíveis separados; modelo revisado antes de criar infraestrutura.
@@ -93,10 +97,6 @@ O script cria ou reutiliza o GitHub Project pessoal, evita cartões duplicados e
 ### 18 — Planejar segurança e ambientes
 **Semana:** 3 · **Ordem:** 18
 **Aceite:** variáveis públicas e secretas diferenciadas; ambientes de desenvolvimento e produção planejados; políticas de acesso necessárias listadas.
-
-### 19 — Prova técnica das integrações aprovadas
-**Semana:** 3 · **Ordem:** 19
-**Aceite:** somente após cartões 11–15; ambiente de desenvolvimento separado; falhas externas tratadas; nenhum segredo no cliente; documentação atualizada.
 
 ### 20 — Checklist da terceira demonstração
 **Semana:** 3 · **Ordem:** 20

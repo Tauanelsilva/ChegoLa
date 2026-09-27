@@ -66,6 +66,32 @@ function Get-ProjectItems {
     return ($json | ConvertFrom-Json).items
 }
 
+function Get-LinkedRepositoryNames {
+    param([Parameter(Mandatory)][string]$ProjectId)
+
+    $query = @'
+query($projectId: ID!) {
+  node(id: $projectId) {
+    ... on ProjectV2 {
+      repositories(first: 100) {
+        nodes {
+          nameWithOwner
+        }
+      }
+    }
+  }
+}
+'@
+
+    $json = Invoke-Gh -GhArgs @(
+        "api", "graphql",
+        "-f", "query=$query",
+        "-F", "projectId=$ProjectId"
+    )
+    $result = $json | ConvertFrom-Json
+    return @($result.data.node.repositories.nodes | ForEach-Object { $_.nameWithOwner })
+}
+
 function Get-ItemTitle {
     param([Parameter(Mandatory)]$Item)
 
@@ -312,6 +338,30 @@ try {
     $projectView = $projectViewJson | ConvertFrom-Json
     $projectId = [string]$projectView.id
     $projectUrl = [string]$projectView.url
+
+    $targetRepository = "$Owner/$Repository"
+    $linkedRepositories = @(Get-LinkedRepositoryNames -ProjectId $projectId)
+    if ($targetRepository -in $linkedRepositories) {
+        Write-Host "Projeto já vinculado a $targetRepository; mantendo o vínculo existente." -ForegroundColor Green
+    }
+    else {
+        Write-Host "Vinculando o Project ao repositório $targetRepository..." -ForegroundColor Cyan
+        try {
+            $null = Invoke-Gh -GhArgs @(
+                "project", "link", "$projectNumber",
+                "--owner", $Owner,
+                "--repo", $targetRepository
+            )
+        }
+        catch {
+            # Uma execução simultânea pode ter criado o vínculo após a consulta.
+            $linkedAfterAttempt = @(Get-LinkedRepositoryNames -ProjectId $projectId)
+            if ($targetRepository -notin $linkedAfterAttempt) {
+                throw
+            }
+            Write-Host "O projeto já estava vinculado por outra execução; continuando." -ForegroundColor Green
+        }
+    }
 
     $itemsByTitle = @{}
     foreach ($item in @(Get-ProjectItems -ProjectNumber $projectNumber)) {

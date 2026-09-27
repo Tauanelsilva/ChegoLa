@@ -26,7 +26,7 @@ export default function SobrePage() {
           <div><p className="font-bold uppercase tracking-[.2em] text-cyan-700">Sobre o projeto</p><h2 className="section-title mt-3">Tecnologia com propósito local</h2></div>
           <div className="space-y-5 text-lg leading-8 text-slate-600">
             <p>Em períodos de chuva, saber quais vias estão alagadas pode fazer diferença no planejamento de um deslocamento. A ideia do Chegolá? é reunir relatos da comunidade e representá-los de forma clara.</p>
-            <p>Nesta primeira fatia, o produto demonstra navegação, visualização de pontos fictícios e envio local validado. Não há integração com Defesa Civil, banco de dados ou cálculo real de rotas.</p>
+            <p>Nesta primeira fatia funcional, relatos ficam no armazenamento local do navegador e rotas são calculadas por serviços públicos. Não há integração com Defesa Civil, banco de dados, monitoramento em tempo real ou garantia de segurança.</p>
           </div>
         </div>
 
@@ -43,7 +43,7 @@ export default function SobrePage() {
 
       <section className="page-shell">
         <div className="flex flex-col justify-between gap-6 rounded-3xl bg-amber-100 p-8 md:flex-row md:items-center md:p-12">
-          <div><BookOpen className="mb-4 size-8 text-amber-700" /><h2 className="font-heading text-2xl font-semibold">Conheça a demonstração completa</h2><p className="mt-2 text-slate-700">Veja os dados simulados e entenda como o fluxo foi pensado.</p></div>
+          <div><BookOpen className="mb-4 size-8 text-amber-700" /><h2 className="font-heading text-2xl font-semibold">Conheça o MVP funcional</h2><p className="mt-2 text-slate-700">Veja os dados iniciais e os relatos locais, sempre tratados como não oficiais.</p></div>
           <Link href="/ocorrencias" className={buttonVariants({ size: "lg", className: "bg-slate-950" })}>Ver ocorrências</Link>
         </div>
       </section>

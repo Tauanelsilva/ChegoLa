@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function Home() {
   const steps = [
-    { icon: MapPinned, title: "Visualize", text: "Explore pontos simulados de atenção no mapa de Itaúna." },
+    { icon: MapPinned, title: "Visualize", text: "Explore no mapa os pontos iniciais e os relatos salvos neste navegador." },
     { icon: ShieldAlert, title: "Confira", text: "Veja o nível de risco e a atualização de cada ocorrência." },
     { icon: Megaphone, title: "Colabore", text: "Informe um alagamento por meio do formulário demonstrativo." },
   ];
@@ -17,7 +17,7 @@ export default function Home() {
         <div className="absolute inset-0 opacity-30 [background-image:radial-gradient(circle_at_70%_25%,#0891b2_0,transparent_35%),radial-gradient(circle_at_90%_80%,#f59e0b_0,transparent_22%)]" />
         <div className="page-shell relative grid items-center gap-12 lg:grid-cols-[1.05fr_.95fr]">
           <div>
-            <Badge className="mb-6 border-cyan-500/40 bg-cyan-500/10 text-cyan-200">Demonstração com dados simulados</Badge>
+            <Badge className="mb-6 border-cyan-500/40 bg-cyan-500/10 text-cyan-200">MVP funcional • dados não oficiais</Badge>
             <h1 className="font-heading text-5xl font-semibold leading-[1.05] tracking-tight md:text-7xl">
               A chuva chegou.<br /><span className="text-cyan-400">E a água, chegou lá?</span>
             </h1>
@@ -72,7 +72,7 @@ export default function Home() {
         <div className="page-shell flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
           <div>
             <p className="font-heading text-2xl font-semibold">Encontrou uma área alagada?</p>
-            <p className="mt-2 text-cyan-100">Sua informação pode ajudar outras pessoas. Este envio é apenas simulado.</p>
+            <p className="mt-2 text-cyan-100">O relato fica salvo somente neste navegador e aparece imediatamente no mapa.</p>
           </div>
           <Link href="/informar" className={buttonVariants({ size: "lg", className: "bg-white text-cyan-900 hover:bg-cyan-50" })}><Route /> Informar agora</Link>
         </div>

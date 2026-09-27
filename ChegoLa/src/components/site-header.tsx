@@ -30,6 +30,7 @@ export function SiteHeader() {
         mobile ? (
           <SheetClose
             key={link.href}
+            nativeButton={false}
             render={<Link href={link.href} aria-current={active ? "page" : undefined} className={cn("rounded-md px-3 py-2 text-base font-semibold transition-colors", active ? "bg-cyan-50 text-cyan-800" : "text-slate-600 hover:bg-slate-50 hover:text-cyan-800")} />}
           >
             {link.label}
@@ -75,7 +76,7 @@ export function SiteHeader() {
             </SheetTitle>
             <nav className="mt-8 flex flex-col gap-2" aria-label="Navegação móvel">
               {nav(true)}
-              <SheetClose render={<Link href="/informar" className={buttonVariants({ className: "mt-3 bg-amber-500 text-slate-950 hover:bg-amber-400" })} />}>
+              <SheetClose nativeButton={false} render={<Link href="/informar" className={buttonVariants({ className: "mt-3 bg-amber-500 text-slate-950 hover:bg-amber-400" })} />}>
                 Informar ocorrência
               </SheetClose>
             </nav>

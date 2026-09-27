@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Nunito_Sans, Outfit } from "next/font/google";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import "maplibre-gl/dist/maplibre-gl.css";
 import "./globals.css";
 
 const nunito = Nunito_Sans({
