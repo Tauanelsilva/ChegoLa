@@ -3,10 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "npm run sync:maplibre",
     "dev": "next dev",
+    "prebuild": "npm run sync:maplibre",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "npm run sync:maplibre",
+    "sync:maplibre": "node scripts/sync-maplibre-assets.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

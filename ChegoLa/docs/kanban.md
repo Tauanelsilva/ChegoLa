@@ -12,6 +12,8 @@ pwsh -File .\scripts\criar-kanban.ps1
 
 O script cria ou reutiliza o GitHub Project pessoal, evita cartões duplicados e não apaga conteúdo existente. A posição deste arquivo registra o estado funcional atual; o script aplica o planejamento inicial das três semanas.
 
+Decisões de deploy, limites dos serviços públicos e a evolução para dados compartilhados estão em [`proximos-passos.md`](proximos-passos.md).
+
 ## Done
 
 ### 01 — Base oficial e identidade visual
@@ -40,11 +42,11 @@ O script cria ou reutiliza o GitHub Project pessoal, evita cartões duplicados e
 
 ### 14 — Definir mapa-base e licença
 **Semana:** 3 · **Ordem:** 14
-**Aceite:** OpenFreeMap/MapLibre e atribuição OpenStreetMap identificados; uso demonstrativo e dependência de serviço público documentados.
+**Aceite:** MapLibre com tiles raster OpenStreetMap, atribuição e fallback CARTO/OSM; uso demonstrativo e dependência de serviços públicos documentados.
 
 ### 15 — Avaliar geocodificação e rotas
 **Semana:** 3 · **Ordem:** 15
-**Aceite:** Nominatim e OSRM usados sem chaves; limites e indisponibilidade comunicados; rota identificada explicitamente como não segura.
+**Aceite:** Nominatim acessado por Route Handler com cache, limite e variantes para Itaúna; OSRM usado sem chave; indisponibilidade comunicada e rota identificada explicitamente como não segura.
 
 ### 19 — Prova técnica das integrações aprovadas
 **Semana:** 3 · **Ordem:** 19

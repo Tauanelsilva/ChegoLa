@@ -4,6 +4,7 @@ export type Coordinates = {
   latitude: number;
   longitude: number;
   label: string;
+  approximate?: boolean;
 };
 
 export type RouteResult = {
@@ -12,10 +13,9 @@ export type RouteResult = {
   durationMinutes: number;
 };
 
-const ITAUNA_VIEWBOX = "-44.66,-20.15,-44.49,-20.00";
-
 async function fetchWithTimeout(
   input: string,
+  serviceName: string,
   init: RequestInit = {},
   timeoutMs = 12000,
 ) {
@@ -26,8 +26,29 @@ async function fetchWithTimeout(
       ...init,
       signal: controller.signal,
     });
-    if (!response.ok) throw new Error(`Serviço respondeu ${response.status}`);
+    if (!response.ok) {
+      const payload = (await response
+        .clone()
+        .json()
+        .catch(() => null)) as { error?: string } | null;
+      throw new Error(
+        payload?.error ??
+          `${serviceName} respondeu com HTTP ${response.status}. Tente novamente mais tarde.`,
+      );
+    }
     return response;
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw new Error(
+        `${serviceName} demorou mais de ${Math.round(timeoutMs / 1000)} segundos para responder.`,
+      );
+    }
+    if (error instanceof TypeError) {
+      throw new Error(
+        `Não foi possível acessar ${serviceName}. Verifique a conexão, bloqueios de rede ou CORS.`,
+      );
+    }
+    throw error;
   } finally {
     window.clearTimeout(timer);
   }
@@ -57,33 +78,26 @@ export async function geocodeLocation(query: string): Promise<Coordinates> {
   const coordinates = parseCoordinates(query);
   if (coordinates) return coordinates;
 
-  const params = new URLSearchParams({
-    q: `${query}, Itaúna, Minas Gerais, Brasil`,
-    format: "jsonv2",
-    limit: "1",
-    countrycodes: "br",
-    viewbox: ITAUNA_VIEWBOX,
-    bounded: "1",
-    "accept-language": "pt-BR",
-  });
+  const params = new URLSearchParams({ q: query });
   const response = await fetchWithTimeout(
-    `https://nominatim.openstreetmap.org/search?${params.toString()}`,
+    `/api/geocode?${params.toString()}`,
+    "geocodificação do Chegolá?",
     { headers: { Accept: "application/json" } },
+    30000,
   );
-  const results = (await response.json()) as Array<{
-    lat: string;
-    lon: string;
-    display_name: string;
-  }>;
-  if (!results.length) {
-    throw new Error(
-      "Local não encontrado em Itaúna. Detalhe o endereço ou use latitude, longitude.",
-    );
-  }
+  const payload = (await response.json()) as {
+    result: {
+      latitude: number;
+      longitude: number;
+      label: string;
+      approximate: boolean;
+    };
+  };
   return {
-    latitude: Number(results[0].lat),
-    longitude: Number(results[0].lon),
-    label: results[0].display_name,
+    latitude: payload.result.latitude,
+    longitude: payload.result.longitude,
+    label: payload.result.label,
+    approximate: payload.result.approximate,
   };
 }
 
@@ -94,6 +108,7 @@ export async function calculateRoute(
   const coordinates = `${origin.longitude},${origin.latitude};${destination.longitude},${destination.latitude}`;
   const response = await fetchWithTimeout(
     `https://router.project-osrm.org/route/v1/driving/${coordinates}?overview=full&geometries=geojson&steps=false`,
+    "OSRM público",
   );
   const result = (await response.json()) as {
     code: string;

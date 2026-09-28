@@ -2,7 +2,10 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { ArrowDownUp, CircleAlert, MapPin, Navigation } from "lucide-react";
-import { OccurrenceMap } from "@/components/occurrence-map";
+import {
+  OccurrenceMap,
+  type MapNoticeLevel,
+} from "@/components/occurrence-map";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,6 +16,7 @@ import {
   calculateRoute,
   geocodeLocation,
   occurrencesNearRoute,
+  type Coordinates,
   type RouteResult,
 } from "@/lib/map-services";
 import {
@@ -28,8 +32,15 @@ export default function MapaPage() {
   const [destination, setDestination] = useState("");
   const [status, setStatus] = useState<RouteStatus>("idle");
   const [error, setError] = useState("");
-  const [mapError, setMapError] = useState("");
+  const [mapNotice, setMapNotice] = useState<{
+    message: string;
+    level: MapNoticeLevel;
+  } | null>(null);
   const [route, setRoute] = useState<RouteResult | null>(null);
+  const [resolvedLocations, setResolvedLocations] = useState<{
+    origin?: Coordinates;
+    destination?: Coordinates;
+  } | null>(null);
   const [occurrences, setOccurrences] = useState<Occurrence[]>([]);
   const [nearbyOccurrences, setNearbyOccurrences] = useState<Occurrence[]>([]);
 
@@ -44,9 +55,12 @@ export default function MapaPage() {
     };
   }, []);
 
-  const handleMapError = useCallback((message: string) => {
-    setMapError(message);
-  }, []);
+  const handleMapNotice = useCallback(
+    (message: string, level: MapNoticeLevel) => {
+      setMapNotice({ message, level });
+    },
+    [],
+  );
 
   async function calculate() {
     if (!origin.trim() || !destination.trim()) {
@@ -58,12 +72,17 @@ export default function MapaPage() {
     setStatus("loading");
     setError("");
     setRoute(null);
+    setResolvedLocations(null);
     setNearbyOccurrences([]);
 
     try {
       const resolvedOrigin = await geocodeLocation(origin);
-      await new Promise((resolve) => window.setTimeout(resolve, 1100));
+      setResolvedLocations({ origin: resolvedOrigin });
       const resolvedDestination = await geocodeLocation(destination);
+      setResolvedLocations({
+        origin: resolvedOrigin,
+        destination: resolvedDestination,
+      });
       const result = await calculateRoute(
         resolvedOrigin,
         resolvedDestination,
@@ -87,6 +106,7 @@ export default function MapaPage() {
     setOrigin(destination);
     setDestination(origin);
     setRoute(null);
+    setResolvedLocations(null);
     setStatus("idle");
   }
 
@@ -178,6 +198,30 @@ export default function MapaPage() {
               </Alert>
             )}
 
+            {resolvedLocations && (
+              <div
+                className="space-y-2 rounded-lg border bg-slate-50 p-3 text-xs leading-5 text-slate-700"
+                aria-live="polite"
+              >
+                {resolvedLocations.origin && (
+                  <p>
+                    <strong>Origem encontrada:</strong>{" "}
+                    {resolvedLocations.origin.label}
+                    {resolvedLocations.origin.approximate &&
+                      " (resultado aproximado)"}
+                  </p>
+                )}
+                {resolvedLocations.destination && (
+                  <p>
+                    <strong>Destino encontrado:</strong>{" "}
+                    {resolvedLocations.destination.label}
+                    {resolvedLocations.destination.approximate &&
+                      " (resultado aproximado)"}
+                  </p>
+                )}
+              </div>
+            )}
+
             {status === "ready" && route && (
               <Alert
                 className={
@@ -208,25 +252,37 @@ export default function MapaPage() {
             )}
 
             <p className="text-xs leading-5 text-muted-foreground">
-              Geocodificação: Nominatim/OpenStreetMap. Rota: servidor público
-              OSRM. Serviços sem garantia de disponibilidade, destinados a esta
-              demonstração de baixo volume.
+              Geocodificação: Route Handler do Chegolá? com
+              Nominatim/OpenStreetMap, cache e limite de consultas. Rota:
+              servidor público OSRM. Serviços sem garantia de disponibilidade,
+              destinados a esta demonstração de baixo volume.
             </p>
           </CardContent>
         </Card>
 
         <div>
-          {mapError && (
-            <Alert variant="destructive" className="mb-3">
+          {mapNotice && (
+            <Alert
+              variant={mapNotice.level === "error" ? "destructive" : "default"}
+              className={
+                mapNotice.level === "warning"
+                  ? "mb-3 border-amber-300 bg-amber-50"
+                  : "mb-3"
+              }
+            >
               <CircleAlert />
-              <AlertTitle>Mapa indisponível</AlertTitle>
-              <AlertDescription>{mapError}</AlertDescription>
+              <AlertTitle>
+                {mapNotice.level === "error"
+                  ? "Mapa parcialmente indisponível"
+                  : "Base alternativa ativada"}
+              </AlertTitle>
+              <AlertDescription>{mapNotice.message}</AlertDescription>
             </Alert>
           )}
           <OccurrenceMap
             occurrences={occurrences}
             routeCoordinates={route?.coordinates}
-            onMapError={handleMapError}
+            onMapNotice={handleMapNotice}
           />
         </div>
       </div>

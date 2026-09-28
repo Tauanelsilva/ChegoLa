@@ -11,8 +11,58 @@ import {
   Popup,
   setWorkerUrl,
   type GeoJSONSource,
+  type StyleSpecification,
 } from "maplibre-gl";
 import type { Occurrence } from "@/lib/occurrences";
+
+const MAP_LOAD_TIMEOUT_MS = 12000;
+
+const OSM_RASTER_PRIMARY: StyleSpecification = {
+  version: 8,
+  sources: {
+    "osm-standard": {
+      type: "raster",
+      tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+      tileSize: 256,
+      maxzoom: 19,
+      attribution:
+        '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors</a>',
+    },
+  },
+  layers: [
+    {
+      id: "osm-standard",
+      type: "raster",
+      source: "osm-standard",
+    },
+  ],
+};
+
+const CARTO_RASTER_FALLBACK: StyleSpecification = {
+  version: 8,
+  sources: {
+    "carto-light": {
+      type: "raster",
+      tiles: [
+        "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+        "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+        "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+        "https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+      ],
+      tileSize: 256,
+      maxzoom: 20,
+      attribution:
+        '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors</a> © <a href="https://carto.com/attributions" target="_blank" rel="noreferrer">CARTO</a>',
+    },
+  },
+  layers: [
+    {
+      id: "carto-light",
+      type: "raster",
+      source: "carto-light",
+    },
+  ],
+};
 
 const RISK_COLORS = {
   Alto: "#dc2626",
@@ -20,41 +70,47 @@ const RISK_COLORS = {
   Baixo: "#0891b2",
 } as const;
 
+export type MapNoticeLevel = "warning" | "error";
+
 type OccurrenceMapProps = {
   occurrences: Occurrence[];
   routeCoordinates?: [number, number][];
-  onMapError?: (message: string) => void;
+  onMapNotice?: (message: string, level: MapNoticeLevel) => void;
 };
 
 export function OccurrenceMap({
   occurrences,
   routeCoordinates = [],
-  onMapError,
+  onMapNotice,
 }: OccurrenceMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Map | null>(null);
   const markersRef = useRef<Marker[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [provider, setProvider] = useState<"osm" | "carto">("osm");
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
+    // Os dois módulos são sincronizados de node_modules para public/ pelos
+    // scripts predev, prebuild e postinstall. Isso evita workers blob frágeis
+    // no Turbopack, Windows e Vercel.
     setWorkerUrl("/maplibre-gl-worker.mjs");
+
     const map = new Map({
       container: containerRef.current,
-      style: "https://tiles.openfreemap.org/styles/liberty",
+      style: OSM_RASTER_PRIMARY,
       center: [-44.5764, -20.0756],
       zoom: 13,
       attributionControl: false,
     });
     mapRef.current = map;
-    map.addControl(
-      new AttributionControl({
-        customAttribution:
-          'Mapa: <a href="https://openfreemap.org/" target="_blank" rel="noreferrer">OpenFreeMap</a> · Dados © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a>',
-        compact: true,
-      }),
-    );
+
+    let destroyed = false;
+    let fallbackActive = false;
+    let fallbackErrorReported = false;
+
+    map.addControl(new AttributionControl({ compact: true }));
     map.addControl(new NavigationControl(), "top-right");
     map.addControl(
       new GeolocateControl({
@@ -64,52 +120,96 @@ export function OccurrenceMap({
       "top-right",
     );
 
-    map.on("load", () => {
-      map.addSource("calculated-route", {
-        type: "geojson",
-        data: {
-          type: "Feature",
-          properties: {},
-          geometry: { type: "LineString", coordinates: [] },
-        },
-      });
-      map.addLayer({
-        id: "calculated-route-outline",
-        type: "line",
-        source: "calculated-route",
-        paint: {
-          "line-color": "#ffffff",
-          "line-width": 8,
-          "line-opacity": 0.9,
-        },
-      });
-      map.addLayer({
-        id: "calculated-route-line",
-        type: "line",
-        source: "calculated-route",
-        paint: {
-          "line-color": "#0e7490",
-          "line-width": 5,
-          "line-opacity": 0.95,
-        },
-      });
+    const ensureRouteLayers = () => {
+      if (!map.getSource("calculated-route")) {
+        map.addSource("calculated-route", {
+          type: "geojson",
+          data: {
+            type: "Feature",
+            properties: {},
+            geometry: { type: "LineString", coordinates: [] },
+          },
+        });
+      }
+      if (!map.getLayer("calculated-route-outline")) {
+        map.addLayer({
+          id: "calculated-route-outline",
+          type: "line",
+          source: "calculated-route",
+          paint: {
+            "line-color": "#ffffff",
+            "line-width": 8,
+            "line-opacity": 0.9,
+          },
+        });
+      }
+      if (!map.getLayer("calculated-route-line")) {
+        map.addLayer({
+          id: "calculated-route-line",
+          type: "line",
+          source: "calculated-route",
+          paint: {
+            "line-color": "#0e7490",
+            "line-width": 5,
+            "line-opacity": 0.95,
+          },
+        });
+      }
+    };
+
+    const activateFallback = (reason: string) => {
+      if (destroyed || fallbackActive) return;
+      fallbackActive = true;
+      setLoaded(false);
+      setProvider("carto");
+      onMapNotice?.(
+        `${reason} Exibindo temporariamente a base CARTO, que também usa dados do OpenStreetMap.`,
+        "warning",
+      );
+      map.setStyle(CARTO_RASTER_FALLBACK);
+    };
+
+    const loadTimeout = window.setTimeout(() => {
+      if (!fallbackActive) {
+        activateFallback(
+          "Os tiles raster do OpenStreetMap demoraram para responder.",
+        );
+      }
+    }, MAP_LOAD_TIMEOUT_MS);
+
+    map.on("style.load", () => {
+      if (destroyed) return;
+      ensureRouteLayers();
       setLoaded(true);
+      window.clearTimeout(loadTimeout);
     });
 
-    map.on("error", () => {
-      if (!map.isStyleLoaded()) {
-        onMapError?.(
-          "O mapa-base público não pôde ser carregado. Confira sua conexão e tente novamente.",
+    map.on("error", (event) => {
+      const detail =
+        event.error instanceof Error ? ` (${event.error.message})` : "";
+      if (!fallbackActive) {
+        activateFallback(
+          `Um tile do OpenStreetMap não pôde ser carregado${detail}.`,
+        );
+        return;
+      }
+      if (!fallbackErrorReported) {
+        fallbackErrorReported = true;
+        onMapNotice?.(
+          `O mapa alternativo também encontrou uma falha de rede${detail}. Os pontos e a rota podem ficar incompletos; tente novamente mais tarde.`,
+          "error",
         );
       }
     });
 
     return () => {
+      destroyed = true;
+      window.clearTimeout(loadTimeout);
       markersRef.current.forEach((marker) => marker.remove());
       map.remove();
       mapRef.current = null;
     };
-  }, [onMapError]);
+  }, [onMapNotice]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -152,10 +252,7 @@ export function OccurrenceMap({
     if (routeCoordinates.length > 1) {
       const bounds = routeCoordinates.reduce(
         (current, coordinate) => current.extend(coordinate),
-        new LngLatBounds(
-          routeCoordinates[0],
-          routeCoordinates[0],
-        ),
+        new LngLatBounds(routeCoordinates[0], routeCoordinates[0]),
       );
       map.fitBounds(bounds, { padding: 70, maxZoom: 16, duration: 800 });
     }
@@ -165,21 +262,33 @@ export function OccurrenceMap({
     <div className="relative min-h-[560px] overflow-hidden rounded-2xl border bg-cyan-50 shadow-sm">
       <div
         ref={containerRef}
-        className="absolute inset-0"
+        className="h-[560px] w-full"
         aria-label="Mapa de Itaúna com pontos de ocorrência"
       />
       {!loaded && (
         <div
-          className="absolute inset-0 grid place-items-center bg-cyan-50 text-sm font-semibold text-cyan-900"
+          className="absolute inset-0 grid place-items-center bg-cyan-50 px-6 text-center text-sm font-semibold text-cyan-900"
           role="status"
         >
-          Carregando mapa público…
+          Carregando mapa OpenStreetMap… Se a rede bloquear os tiles principais,
+          tentaremos uma base alternativa.
         </div>
       )}
+      <span className="pointer-events-none absolute left-3 top-3 z-10 rounded-md bg-slate-950/85 px-2 py-1 text-[11px] font-semibold text-white">
+        Base: {provider === "osm" ? "OpenStreetMap" : "CARTO/OSM (alternativa)"}
+      </span>
       <div className="pointer-events-none absolute bottom-8 left-3 z-10 flex flex-wrap gap-2 rounded-lg bg-white/95 p-2 text-xs font-semibold shadow">
-        <span><i className="mr-1 inline-block size-2 rounded-full bg-red-600" /> Alto</span>
-        <span><i className="mr-1 inline-block size-2 rounded-full bg-amber-600" /> Médio</span>
-        <span><i className="mr-1 inline-block size-2 rounded-full bg-cyan-600" /> Baixo</span>
+        <span>
+          <i className="mr-1 inline-block size-2 rounded-full bg-red-600" /> Alto
+        </span>
+        <span>
+          <i className="mr-1 inline-block size-2 rounded-full bg-amber-600" />{" "}
+          Médio
+        </span>
+        <span>
+          <i className="mr-1 inline-block size-2 rounded-full bg-cyan-600" />{" "}
+          Baixo
+        </span>
       </div>
     </div>
   );
@@ -198,4 +307,3 @@ function escapeHtml(value: string) {
       })[character] ?? character,
   );
 }
-
