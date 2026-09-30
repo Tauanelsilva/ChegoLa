@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { ArrowDownUp, CircleAlert, MapPin, Navigation } from "lucide-react";
+import { ArrowDownUp, CircleAlert, ExternalLink, MapPin, Navigation } from "lucide-react";
 import {
   OccurrenceMap,
   type MapNoticeLevel,
@@ -117,13 +117,13 @@ export default function MapaPage() {
           variant="outline"
           className="mb-3 border-amber-300 bg-amber-50 text-amber-800"
         >
-          Mapa real • dados colaborativos não verificados
+          Mapa real • fontes e datas identificadas
         </Badge>
         <h1 className="section-title">Mapa interativo</h1>
         <p className="mt-3 max-w-3xl text-muted-foreground">
-          Consulte pontos armazenados neste navegador e calcule uma rota
-          demonstrativa com serviços públicos. O resultado não considera
-          condições em tempo real.
+          Consulte a referência histórica publicada pela Prefeitura e relatos
+          armazenados neste navegador. O resultado não representa condições em
+          tempo real.
         </p>
       </div>
 
@@ -131,8 +131,9 @@ export default function MapaPage() {
         <CircleAlert className="text-amber-700" />
         <AlertTitle>Esta não é uma rota segura</AlertTitle>
         <AlertDescription>
-          O sistema apenas sinaliza ocorrências cadastradas próximas ao traçado.
-          Não substitui orientações da Defesa Civil, trânsito ou emergência.
+          O sistema apenas sinaliza referências e relatos cadastrados próximos
+          ao traçado. Proximidade não significa bloqueio atual, nem ausência de
+          risco. Não substitui orientações da Defesa Civil.
         </AlertDescription>
       </Alert>
 
@@ -148,7 +149,7 @@ export default function MapaPage() {
                   className="pl-10"
                   value={origin}
                   onChange={(event) => setOrigin(event.target.value)}
-                  placeholder="Ex.: Praça da Matriz"
+                  placeholder="Rua, número, bairro ou ponto de interesse"
                   autoComplete="street-address"
                 />
               </div>
@@ -171,7 +172,7 @@ export default function MapaPage() {
                   className="pl-10"
                   value={destination}
                   onChange={(event) => setDestination(event.target.value)}
-                  placeholder="Ex.: Bairro Santanense"
+                  placeholder="Outro endereço em Itaúna"
                   autoComplete="street-address"
                 />
               </div>
@@ -179,6 +180,7 @@ export default function MapaPage() {
             <p className="text-xs leading-5 text-muted-foreground">
               Se um endereço não for encontrado, use coordenadas no formato
               <span className="font-semibold"> -20.0756, -44.5764</span>.
+              A busca acontece somente ao calcular, sem autocomplete contínuo.
             </p>
             <Button
               className="w-full bg-cyan-700 hover:bg-cyan-800"
@@ -207,16 +209,14 @@ export default function MapaPage() {
                   <p>
                     <strong>Origem encontrada:</strong>{" "}
                     {resolvedLocations.origin.label}
-                    {resolvedLocations.origin.approximate &&
-                      " (resultado aproximado)"}
+                    {formatMatchType(resolvedLocations.origin)}
                   </p>
                 )}
                 {resolvedLocations.destination && (
                   <p>
                     <strong>Destino encontrado:</strong>{" "}
                     {resolvedLocations.destination.label}
-                    {resolvedLocations.destination.approximate &&
-                      " (resultado aproximado)"}
+                    {formatMatchType(resolvedLocations.destination)}
                   </p>
                 )}
               </div>
@@ -238,14 +238,14 @@ export default function MapaPage() {
                   {nearbyOccurrences.length ? (
                     <>
                       {" "}
-                      Passa a até 200 m de {nearbyOccurrences.length} ocorrência
-                      {nearbyOccurrences.length > 1 ? "s" : ""}:{" "}
+                      Passa a até 200 m de {nearbyOccurrences.length} ponto
+                      {nearbyOccurrences.length > 1 ? "s cadastrados" : " cadastrado"}:{" "}
                       {nearbyOccurrences
                         .map((occurrence) => occurrence.place)
                         .join(", ")}.
                     </>
                   ) : (
-                    " Nenhuma ocorrência cadastrada foi encontrada a até 200 m do traçado."
+                    " Nenhum ponto cadastrado foi encontrado a até 200 m do traçado."
                   )}
                 </AlertDescription>
               </Alert>
@@ -253,9 +253,11 @@ export default function MapaPage() {
 
             <p className="text-xs leading-5 text-muted-foreground">
               Geocodificação: Route Handler do Chegolá? com
-              Nominatim/OpenStreetMap, cache e limite de consultas. Rota:
-              servidor público OSRM. Serviços sem garantia de disponibilidade,
-              destinados a esta demonstração de baixo volume.
+              Nominatim/OpenStreetMap, normalização, variantes, limite municipal,
+              cache e controle de frequência. A cobertura depende dos endereços
+              cadastrados no OpenStreetMap. Rota: servidor público OSRM. Serviços
+              sem garantia de disponibilidade, destinados a esta demonstração
+              de baixo volume.
             </p>
           </CardContent>
         </Card>
@@ -284,8 +286,34 @@ export default function MapaPage() {
             routeCoordinates={route?.coordinates}
             onMapNotice={handleMapNotice}
           />
+          <div className="mt-4 rounded-xl border bg-white p-4 text-sm leading-6 text-slate-600">
+            <p className="font-semibold text-slate-900">
+              Fonte e última verificação
+            </p>
+            <p>
+              O ponto oficial exibido documenta alagamentos históricos na
+              Avenida Jove Soares/Prainha. Publicação da Prefeitura de
+              07/07/2017, consultada em 29/09/2026; marcador aproximado em um
+              trecho geocodificado da avenida.
+            </p>
+            <a
+              href="https://www.itauna.mg.gov.br/portal/noticias/0/3/1530/equipe-do-governo-de-itauna-faz-vistoria-no-canal-da-jove-soares"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-1 inline-flex items-center gap-1 font-semibold text-cyan-800 underline underline-offset-2"
+            >
+              Abrir fonte oficial <ExternalLink className="size-4" />
+            </a>
+          </div>
         </div>
       </div>
     </div>
   );
+}
+
+function formatMatchType(location: Coordinates) {
+  if (location.matchType === "coordinates") return " (coordenadas informadas)";
+  return location.approximate
+    ? " (resultado aproximado)"
+    : " (correspondência textual exata)";
 }

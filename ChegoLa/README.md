@@ -1,8 +1,8 @@
 # Chegolá?
 
-MVP funcional de uma aplicação web colaborativa sobre pontos de alagamento em Itaúna/MG. Inclui cinco fluxos responsivos: Início, Mapa Interativo, Ocorrências, Informar ocorrência e Sobre o Projeto.
+MVP funcional de uma aplicação web colaborativa sobre pontos de alagamento em Itaúna/MG. Inclui identidade própria, uma referência histórica publicada pela Prefeitura e cinco fluxos responsivos: Início, Mapa Interativo, Ocorrências, Informar ocorrência e Sobre o Projeto.
 
-> Os pontos iniciais são demonstrativos e os relatos criados não são verificados. A rota calculada não é uma rota segura e não deve substituir orientações oficiais.
+> “Fonte oficial” identifica a origem da publicação, não uma condição atual. Relatos criados não são verificados. A rota calculada não é uma rota segura e não deve substituir orientações oficiais.
 
 ## Tecnologias
 
@@ -14,13 +14,16 @@ MVP funcional de uma aplicação web colaborativa sobre pontos de alagamento em 
 
 ## Como os dados funcionam
 
+- O ponto inicial na Avenida Jove Soares/Prainha vem de publicação da Prefeitura de 07/07/2017 e usa uma coordenada aproximada de trecho, sem classificação de risco.
 - Relatos criados são geocodificados e persistidos apenas no `localStorage` do navegador.
 - Não há banco, autenticação, upload de mídia, telemetria ou segredo.
 - O mapa usa tiles raster do OpenStreetMap com atribuição; se eles falharem, tenta uma base CARTO com dados OpenStreetMap e mostra o fallback.
-- Endereços passam por um Route Handler do Next.js que consulta Nominatim no servidor, prioriza Itaúna, tenta variações, limita frequência e aplica cache.
+- Ruas, números, bairros e pontos de interesse passam por um Route Handler que normaliza a consulta, tenta variantes genéricas, restringe resultados ao município de Itaúna, classifica correspondência exata/aproximada, limita frequência e aplica cache.
+- A busca ocorre apenas após uma ação da pessoa usuária. Não há autocomplete contínuo, em respeito à política da instância pública do Nominatim.
 - Rotas usam o servidor público de demonstração do OSRM.
 - Os serviços públicos podem impor limites ou ficar indisponíveis; não são adequados para uma operação de produção sem contrato e infraestrutura próprios.
-- “Atual” significa consulta feita no momento da ação. Não há fonte oficial ou monitoramento de alagamentos em tempo real.
+- A localização depende da cobertura e da atualização do OpenStreetMap. Um endereço válido pode não existir ou estar incompleto nessa base; nesse caso, o app não inventa um resultado e aceita coordenadas.
+- “Atual” significa consulta de mapa/endereço/rota feita no momento da ação. Não há monitoramento de alagamentos em tempo real.
 - Supabase/Realtime poderia sincronizar registros entre clientes, mas ainda exigiria moderação e uma fonte validada para representar condições reais.
 
 ## Executar localmente
@@ -69,6 +72,7 @@ Veja o plano detalhado em [`docs/proximos-passos.md`](docs/proximos-passos.md).
 - [`docs/prompt-inicial.md`](docs/prompt-inicial.md): prompt mestre para sessões de desenvolvimento.
 - [`docs/kanban.md`](docs/kanban.md): plano Kanban de três semanas com ordem e critérios de aceite.
 - [`docs/proximos-passos.md`](docs/proximos-passos.md): deploy Vercel, domínio, dados compartilhados e caminho para produção.
+- [`docs/fontes-pontos-criticos.md`](docs/fontes-pontos-criticos.md): fontes oficiais consultadas, evidências, geocodificação e locais excluídos por incerteza.
 - [`docs/usar-script-kanban.md`](docs/usar-script-kanban.md): pré-requisitos, segurança e limitações da automação do GitHub Project.
 - [`scripts/criar-kanban.ps1`](scripts/criar-kanban.ps1): script idempotente para criar ou atualizar o Kanban e vinculá-lo a `TauanelSilva/ChegoLa`.
 

@@ -6,6 +6,7 @@ import {
   AlertTriangle,
   CalendarClock,
   CheckCircle2,
+  ExternalLink,
   Inbox,
   MapPin,
   RefreshCw,
@@ -29,6 +30,7 @@ type RiskFilter = "Todos" | RiskLevel;
 type SourceFilter = "Todas" | OccurrenceSource;
 
 const RISK_CLASSES: Record<RiskLevel, string> = {
+  "Não classificado": "bg-slate-100 text-slate-700",
   Alto: "bg-red-100 text-red-800",
   Médio: "bg-amber-100 text-amber-800",
   Baixo: "bg-cyan-100 text-cyan-800",
@@ -88,12 +90,12 @@ export default function OcorrenciasPage() {
       <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
         <div>
           <Badge className="mb-3 bg-cyan-100 text-cyan-800">
-            Dados iniciais demonstrativos + relatos deste navegador
+            Referência oficial histórica + relatos deste navegador
           </Badge>
-          <h1 className="section-title">Ocorrências recentes</h1>
+          <h1 className="section-title">Pontos e relatos</h1>
           <p className="mt-3 max-w-2xl text-muted-foreground">
-            Consulte relatos não verificados e filtre por local, risco ou
-            origem. Nada é sincronizado entre dispositivos.
+            Consulte pontos publicados por fonte oficial e relatos não
+            verificados. Nada é monitorado em tempo real.
           </p>
         </div>
         <Link
@@ -121,9 +123,9 @@ export default function OcorrenciasPage() {
         <AlertTriangle className="text-amber-700" />
         <AlertTitle>Aviso sobre os dados</AlertTitle>
         <AlertDescription>
-          Os pontos iniciais são fictícios e os relatos locais são
-          autodeclarados. Não use esta página como única fonte para decidir um
-          deslocamento.
+          “Fonte oficial” identifica a origem da publicação, não a condição
+          atual da via. Relatos locais são autodeclarados e ficam somente neste
+          navegador. Não use esta página como única fonte para se deslocar.
         </AlertDescription>
       </Alert>
 
@@ -155,6 +157,7 @@ export default function OcorrenciasPage() {
               className="h-9 w-full rounded-lg border bg-background px-3 text-sm"
             >
               <option>Todos</option>
+              <option>Não classificado</option>
               <option>Alto</option>
               <option>Médio</option>
               <option>Baixo</option>
@@ -171,7 +174,7 @@ export default function OcorrenciasPage() {
               className="h-9 w-full rounded-lg border bg-background px-3 text-sm"
             >
               <option>Todas</option>
-              <option>Demonstração</option>
+              <option>Fonte oficial</option>
               <option>Relato local</option>
             </select>
           </div>
@@ -260,7 +263,9 @@ export default function OcorrenciasPage() {
                       </p>
                     </div>
                     <Badge className={RISK_CLASSES[item.risk]}>
-                      Risco {item.risk}
+                      {item.risk === "Não classificado"
+                        ? "Risco não classificado"
+                        : `Risco ${item.risk}`}
                     </Badge>
                   </div>
                   <p className="mt-5 line-clamp-3 leading-6 text-slate-600">
@@ -269,13 +274,36 @@ export default function OcorrenciasPage() {
                   <div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t pt-4 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <CalendarClock className="size-4" />
+                      {item.source === "Fonte oficial" ? "Publicado em " : ""}
                       {new Intl.DateTimeFormat("pt-BR").format(
                         new Date(`${item.date}T${item.time}:00`),
                       )}{" "}
-                      às {item.time}
+                      {item.source === "Relato local" && `às ${item.time}`}
                     </span>
                     <Badge variant="outline">{item.source}</Badge>
                   </div>
+                  {item.source === "Fonte oficial" && (
+                    <div className="mt-4 rounded-lg bg-cyan-50 p-3 text-sm leading-6 text-cyan-950">
+                      <p>
+                        Localização: {item.locationPrecision}. Consulta da fonte
+                        em {item.consultedAt
+                          ? new Intl.DateTimeFormat("pt-BR").format(
+                              new Date(`${item.consultedAt}T12:00:00`),
+                            )
+                          : "data não informada"}.
+                      </p>
+                      {item.sourceUrl && (
+                        <a
+                          href={item.sourceUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-1 inline-flex items-center gap-1 font-semibold underline underline-offset-2"
+                        >
+                          Ver publicação da Prefeitura <ExternalLink className="size-3.5" />
+                        </a>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}

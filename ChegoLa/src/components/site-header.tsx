@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Waves } from "lucide-react";
+import { Menu } from "lucide-react";
+import { BrandLogo } from "@/components/brand-logo";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Sheet,
@@ -50,14 +51,12 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b bg-white/95 backdrop-blur">
-      <div className="page-shell flex h-18 items-center justify-between gap-6">
-        <Link href="/" className="flex items-center gap-2" aria-label="Chegolá? — início">
-          <span className="grid size-10 place-items-center rounded-xl bg-cyan-700 text-white">
-            <Waves className="size-6" />
-          </span>
-          <span className="font-heading text-2xl font-bold tracking-tight text-slate-900">
-            Chegolá<span className="text-amber-500">?</span>
-          </span>
+      <div className="page-shell flex min-h-20 items-center justify-between gap-4 py-2">
+        <Link href="/" className="shrink-0" aria-label="Chegolá? — início">
+          <BrandLogo
+            priority
+            className="w-40 sm:w-48"
+          />
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Navegação principal">
@@ -71,8 +70,8 @@ export function SiteHeader() {
             <Menu />
           </SheetTrigger>
           <SheetContent>
-            <SheetTitle className="flex items-center gap-2">
-              <Waves className="text-cyan-700" /> Chegolá?
+            <SheetTitle>
+              <BrandLogo className="w-48" />
             </SheetTitle>
             <nav className="mt-8 flex flex-col gap-2" aria-label="Navegação móvel">
               {nav(true)}

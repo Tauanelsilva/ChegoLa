@@ -18,7 +18,7 @@ Decisões de deploy, limites dos serviços públicos e a evolução para dados c
 
 ### 01 — Base oficial e identidade visual
 **Semana:** 1 · **Ordem:** 1  
-**Aceite:** scaffold oficial Next.js; TypeScript, Tailwind e shadcn/ui configurados; identidade visual responsiva; sem segredo ou serviço externo.
+**Aceite:** scaffold oficial Next.js; TypeScript, Tailwind e shadcn/ui configurados; logo vetorial responsiva com pin azul/laranja, nome e slogan aplicada; sem segredo.
 
 ### 02 — Navegação e páginas institucionais
 **Semana:** 1 · **Ordem:** 2  
@@ -28,9 +28,9 @@ Decisões de deploy, limites dos serviços públicos e a evolução para dados c
 **Semana:** 1 · **Ordem:** 3  
 **Aceite:** MapLibre com mapa público e atribuição; ocorrências locais como marcadores; rota OSRM com geocodificação, carregamento e erro; alerta de proximidade sem promessa de rota segura.
 
-### 04 — Ocorrências simuladas
+### 04 — Pontos oficiais e relatos locais
 **Semana:** 1 · **Ordem:** 4  
-**Aceite:** cartões tipados mostram local, região, risco e origem; dados iniciais e relatos locais são diferenciados; busca, filtros e estados carregando, vazio e erro implementados.
+**Aceite:** cartões tipados diferenciam referência oficial histórica de relatos locais; fonte, data e precisão são visíveis; locais oficiais ambíguos ficam documentados e fora do mapa; busca, filtros e estados carregando, vazio e erro implementados.
 
 ### 05 — Formulário demonstrativo
 **Semana:** 1 · **Ordem:** 5  
@@ -46,7 +46,7 @@ Decisões de deploy, limites dos serviços públicos e a evolução para dados c
 
 ### 15 — Avaliar geocodificação e rotas
 **Semana:** 3 · **Ordem:** 15
-**Aceite:** Nominatim acessado por Route Handler com cache, limite e variantes para Itaúna; OSRM usado sem chave; indisponibilidade comunicada e rota identificada explicitamente como não segura.
+**Aceite:** Nominatim acessado por Route Handler sem lista hardcoded de ruas, com normalização, variantes genéricas, limite municipal, classificação exata/aproximada, cache e controle de frequência; coordenadas preservadas; OSRM usado sem chave e rota identificada explicitamente como não segura.
 
 ### 19 — Prova técnica das integrações aprovadas
 **Semana:** 3 · **Ordem:** 19

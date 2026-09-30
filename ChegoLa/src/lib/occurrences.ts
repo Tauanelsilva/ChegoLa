@@ -1,5 +1,6 @@
-export type RiskLevel = "Baixo" | "Médio" | "Alto";
-export type OccurrenceSource = "Demonstração" | "Relato local";
+export type RiskLevel = "Não classificado" | "Baixo" | "Médio" | "Alto";
+export type OccurrenceSource = "Fonte oficial" | "Relato local";
+export type LocationPrecision = "Trecho aproximado" | "Coordenada informada";
 
 export type Occurrence = {
   id: string;
@@ -13,6 +14,11 @@ export type Occurrence = {
   longitude: number;
   source: OccurrenceSource;
   createdAt: string;
+  sourceUrl?: string;
+  sourceTitle?: string;
+  publishedAt?: string;
+  consultedAt?: string;
+  locationPrecision?: LocationPrecision;
 };
 
 export const STORAGE_KEY = "chegola:occurrences:v1";
@@ -20,56 +26,25 @@ export const OCCURRENCES_CHANGED_EVENT = "chegola:occurrences-changed";
 
 export const INITIAL_OCCURRENCES: Occurrence[] = [
   {
-    id: "demo-jove-soares",
-    place: "Av. Jove Soares",
+    id: "oficial-jove-soares-prainha",
+    place: "Avenida Jove Soares (Prainha)",
     region: "Centro",
-    risk: "Alto",
-    description: "Ponto demonstrativo próximo à região central. Informação não oficial.",
-    date: "2026-09-27",
-    time: "17:42",
-    latitude: -20.0749,
-    longitude: -44.5762,
-    source: "Demonstração",
-    createdAt: "2026-09-27T20:42:00.000Z",
-  },
-  {
-    id: "demo-silva-jardim",
-    place: "Rua Silva Jardim",
-    region: "Garcias",
-    risk: "Médio",
-    description: "Ponto fictício usado para demonstrar alertas próximos à rota.",
-    date: "2026-09-27",
-    time: "17:18",
-    latitude: -20.068,
-    longitude: -44.5686,
-    source: "Demonstração",
-    createdAt: "2026-09-27T20:18:00.000Z",
-  },
-  {
-    id: "demo-miguel-augusto",
-    place: "Av. Dr. Miguel Augusto Gonçalves",
-    region: "Santanense",
-    risk: "Baixo",
-    description: "Localização aproximada e simulada para a experiência do mapa.",
-    date: "2026-09-27",
-    time: "16:55",
-    latitude: -20.0904,
-    longitude: -44.5893,
-    source: "Demonstração",
-    createdAt: "2026-09-27T19:55:00.000Z",
-  },
-  {
-    id: "demo-antonio-corradi",
-    place: "Rua Antônio Corradi",
-    region: "Nogueira Machado",
-    risk: "Médio",
-    description: "Relato fictício sem validação por órgão oficial.",
-    date: "2026-09-27",
-    time: "15:37",
-    latitude: -20.0815,
-    longitude: -44.5608,
-    source: "Demonstração",
-    createdAt: "2026-09-27T18:37:00.000Z",
+    risk: "Não classificado",
+    description:
+      "A Prefeitura registrou alagamentos históricos ao longo da via e insuficiência de vazão do canal. Este marcador representa um trecho geocodificado da avenida, não uma ocorrência atual nem toda a área afetada.",
+    date: "2017-07-07",
+    time: "12:00",
+    latitude: -20.0770707,
+    longitude: -44.5799632,
+    source: "Fonte oficial",
+    createdAt: "2017-07-07T15:00:00.000Z",
+    sourceUrl:
+      "https://www.itauna.mg.gov.br/portal/noticias/0/3/1530/equipe-do-governo-de-itauna-faz-vistoria-no-canal-da-jove-soares",
+    sourceTitle:
+      "Equipe do Governo de Itaúna faz vistoria no canal da Jove Soares",
+    publishedAt: "2017-07-07",
+    consultedAt: "2026-09-29",
+    locationPrecision: "Trecho aproximado",
   },
 ];
 

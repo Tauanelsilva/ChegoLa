@@ -65,6 +65,7 @@ const CARTO_RASTER_FALLBACK: StyleSpecification = {
 };
 
 const RISK_COLORS = {
+  "Não classificado": "#092f5f",
   Alto: "#dc2626",
   Médio: "#d97706",
   Baixo: "#0891b2",
@@ -219,16 +220,25 @@ export function OccurrenceMap({
     markersRef.current = occurrences.map((occurrence) => {
       const element = document.createElement("button");
       element.type = "button";
-      element.className =
-        "size-6 rounded-full border-2 border-white shadow-lg focus:outline-none focus:ring-4 focus:ring-cyan-300";
+      element.className = occurrence.source === "Fonte oficial"
+        ? "grid size-8 place-items-center rounded-full border-2 border-white bg-[#092f5f] shadow-lg focus:outline-none focus:ring-4 focus:ring-cyan-300"
+        : "size-6 rounded-full border-2 border-white shadow-lg focus:outline-none focus:ring-4 focus:ring-cyan-300";
       element.style.backgroundColor = RISK_COLORS[occurrence.risk];
+      if (occurrence.source === "Fonte oficial") {
+        const center = document.createElement("span");
+        center.className = "block size-3 rounded-full bg-[#f5a514]";
+        element.appendChild(center);
+      }
       element.setAttribute(
         "aria-label",
-        `${occurrence.place}, risco ${occurrence.risk}`,
+        `${occurrence.place}, ${occurrence.source.toLocaleLowerCase("pt-BR")}${occurrence.risk === "Não classificado" ? ", sem classificação de risco" : `, risco ${occurrence.risk}`}`,
       );
 
+      const sourceLink = occurrence.sourceUrl
+        ? `<br/><a href="${escapeHtml(occurrence.sourceUrl)}" target="_blank" rel="noreferrer" style="color:#0e7490;text-decoration:underline">Abrir fonte oficial</a>`
+        : "";
       const popup = new Popup({ offset: 16 }).setHTML(
-        `<div style="max-width:220px"><strong>${escapeHtml(occurrence.place)}</strong><br/><span>${escapeHtml(occurrence.region)} · Risco ${occurrence.risk}</span><br/><small>${occurrence.source}</small></div>`,
+        `<div style="max-width:240px"><strong>${escapeHtml(occurrence.place)}</strong><br/><span>${escapeHtml(occurrence.region)}${occurrence.risk === "Não classificado" ? " · Risco não classificado" : ` · Risco ${occurrence.risk}`}</span><br/><small>${occurrence.source}${occurrence.locationPrecision ? ` · ${occurrence.locationPrecision}` : ""}</small>${sourceLink}</div>`,
       );
       return new Marker({ element })
         .setLngLat([occurrence.longitude, occurrence.latitude])
@@ -277,17 +287,14 @@ export function OccurrenceMap({
       <span className="pointer-events-none absolute left-3 top-3 z-10 rounded-md bg-slate-950/85 px-2 py-1 text-[11px] font-semibold text-white">
         Base: {provider === "osm" ? "OpenStreetMap" : "CARTO/OSM (alternativa)"}
       </span>
-      <div className="pointer-events-none absolute bottom-8 left-3 z-10 flex flex-wrap gap-2 rounded-lg bg-white/95 p-2 text-xs font-semibold shadow">
+      <div className="pointer-events-none absolute bottom-8 left-3 z-10 flex flex-wrap gap-3 rounded-lg bg-white/95 p-2 text-xs font-semibold shadow">
         <span>
-          <i className="mr-1 inline-block size-2 rounded-full bg-red-600" /> Alto
+          <i className="mr-1 inline-block size-3 rounded-full border-2 border-[#f5a514] bg-[#092f5f]" />{" "}
+          Ponto de fonte oficial
         </span>
         <span>
-          <i className="mr-1 inline-block size-2 rounded-full bg-amber-600" />{" "}
-          Médio
-        </span>
-        <span>
-          <i className="mr-1 inline-block size-2 rounded-full bg-cyan-600" />{" "}
-          Baixo
+          <i className="mr-1 inline-block size-3 rounded-full bg-amber-600" />{" "}
+          Relato colaborativo
         </span>
       </div>
     </div>

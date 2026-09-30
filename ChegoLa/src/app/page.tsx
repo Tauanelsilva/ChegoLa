@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { ArrowRight, MapPinned, Megaphone, Route, ShieldAlert } from "lucide-react";
+import { BrandLogo } from "@/components/brand-logo";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function Home() {
   const steps = [
-    { icon: MapPinned, title: "Visualize", text: "Explore no mapa os pontos iniciais e os relatos salvos neste navegador." },
-    { icon: ShieldAlert, title: "Confira", text: "Veja o nível de risco e a atualização de cada ocorrência." },
+    { icon: MapPinned, title: "Visualize", text: "Explore no mapa pontos documentados em fonte oficial e relatos salvos neste navegador." },
+    { icon: ShieldAlert, title: "Confira", text: "Diferencie registros históricos oficiais de relatos colaborativos não verificados." },
     { icon: Megaphone, title: "Colabore", text: "Informe um alagamento por meio do formulário demonstrativo." },
   ];
 
@@ -17,13 +18,20 @@ export default function Home() {
         <div className="absolute inset-0 opacity-30 [background-image:radial-gradient(circle_at_70%_25%,#0891b2_0,transparent_35%),radial-gradient(circle_at_90%_80%,#f59e0b_0,transparent_22%)]" />
         <div className="page-shell relative grid items-center gap-12 lg:grid-cols-[1.05fr_.95fr]">
           <div>
-            <Badge className="mb-6 border-cyan-500/40 bg-cyan-500/10 text-cyan-200">MVP funcional • dados não oficiais</Badge>
+            <div className="mb-7 inline-flex rounded-2xl border border-cyan-100/80 bg-gradient-to-br from-white to-cyan-50 px-5 py-4 shadow-lg shadow-cyan-950/20">
+              <BrandLogo
+                priority
+                className="w-[min(76vw,22rem)]"
+              />
+            </div>
+            <br />
+            <Badge className="mb-6 border-cyan-500/40 bg-cyan-500/10 text-cyan-200">MVP funcional • fontes identificadas</Badge>
             <h1 className="font-heading text-5xl font-semibold leading-[1.05] tracking-tight md:text-7xl">
-              A chuva chegou.<br /><span className="text-cyan-400">E a água, chegou lá?</span>
+              Pra você chegar lá,<br /><span className="text-cyan-400">comece por aqui.</span>
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-8 text-slate-300">
-              Consulte pontos de atenção e compartilhe ocorrências de alagamento em Itaúna.
-              Informação colaborativa para decisões mais conscientes.
+              Consulte referências históricas publicadas pela Prefeitura e compartilhe
+              relatos locais de alagamento em Itaúna. Nenhum ponto representa condição em tempo real.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link href="/mapa" className={buttonVariants({ size: "lg", className: "bg-amber-500 text-slate-950 hover:bg-amber-400" })}>Explorar o mapa <ArrowRight /></Link>
@@ -43,7 +51,7 @@ export default function Home() {
               </div>
             ))}
             <div className="absolute bottom-5 left-5 rounded-xl bg-slate-950/85 px-4 py-3">
-              <p className="text-xs uppercase tracking-widest text-cyan-300">Mapa demonstrativo</p>
+              <p className="text-xs uppercase tracking-widest text-cyan-300">Mapa com fontes identificadas</p>
               <p className="mt-1 font-semibold">Itaúna, Minas Gerais</p>
             </div>
           </div>

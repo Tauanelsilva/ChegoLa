@@ -3,12 +3,16 @@
 ## O que a versão atual realmente faz
 
 - **Mapa sob demanda:** o navegador carrega tiles raster do OpenStreetMap quando a página é aberta. Se eles falharem, o aplicativo tenta uma base CARTO com dados OpenStreetMap e mostra o ocorrido.
-- **Endereços sob demanda:** um Route Handler do Next.js consulta Nominatim/OpenStreetMap somente quando a pessoa calcula uma rota ou envia um endereço. O servidor prioriza Itaúna, tenta variações, limita a frequência e mantém cache.
+- **Endereços sob demanda:** um Route Handler consulta Nominatim/OpenStreetMap somente quando a pessoa calcula uma rota ou envia um endereço. O servidor normaliza consultas livres, tenta variantes genéricas, restringe ao limite administrativo de Itaúna, classifica resultado exato/aproximado, limita frequência e mantém cache.
 - **Rotas sob demanda:** o servidor público do OSRM é consultado somente após clicar em **Calcular rota**.
-- **Ocorrências iniciais:** são dados demonstrativos empacotados no código; não são informações oficiais nem atualizadas automaticamente.
+- **Referência inicial:** a Avenida Jove Soares/Prainha foi publicada pela Prefeitura como local de alagamentos históricos. O marcador é um trecho aproximado, sem classificação oficial de risco e sem atualização automática.
 - **Novos relatos:** ficam apenas no `localStorage` do navegador usado. Não aparecem para outras pessoas ou dispositivos e podem desaparecer quando os dados do navegador forem limpos.
 
 Nada nesta versão é monitoramento de alagamentos em tempo real. MapLibre, OpenStreetMap/CARTO, Nominatim e OSRM exibem mapa, localizam endereços e calculam trajetos, mas não fornecem uma fonte validada de alagamentos.
+
+A busca não mantém lista própria de ruas. Ela depende da cobertura do OpenStreetMap: endereços ausentes, números sem cadastro e nomes populares podem não ser encontrados. Para evitar abuso da instância pública, não há autocomplete a cada tecla; a consulta é disparada apenas por ação explícita. Coordenadas continuam aceitas.
+
+As fontes, evidências e decisões de não mapear locais ambíguos estão em [`fontes-pontos-criticos.md`](fontes-pontos-criticos.md).
 
 ## Prioridade 0 — publicar a demonstração com segurança
 

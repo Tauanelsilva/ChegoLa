@@ -21,7 +21,17 @@ export const metadata: Metadata = {
     template: "%s | Chegolá?",
   },
   description:
-    "Demonstração colaborativa para visualizar e informar pontos de alagamento em Itaúna, Minas Gerais.",
+    "Chegolá? reúne referências oficiais históricas e relatos colaborativos locais sobre alagamentos em Itaúna, sem monitoramento em tempo real.",
+  applicationName: "Chegolá?",
+  icons: {
+    icon: "/icon.png",
+  },
+  openGraph: {
+    title: "Chegolá?",
+    description: "Pra você chegar lá, comece por aqui.",
+    locale: "pt_BR",
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

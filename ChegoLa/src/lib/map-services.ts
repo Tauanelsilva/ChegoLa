@@ -5,6 +5,7 @@ export type Coordinates = {
   longitude: number;
   label: string;
   approximate?: boolean;
+  matchType?: "exact" | "approximate" | "coordinates";
 };
 
 export type RouteResult = {
@@ -71,7 +72,13 @@ function parseCoordinates(value: string): Coordinates | null {
   ) {
     return null;
   }
-  return { latitude, longitude, label: `${latitude}, ${longitude}` };
+  return {
+    latitude,
+    longitude,
+    label: `${latitude}, ${longitude}`,
+    approximate: false,
+    matchType: "coordinates",
+  };
 }
 
 export async function geocodeLocation(query: string): Promise<Coordinates> {
@@ -91,6 +98,7 @@ export async function geocodeLocation(query: string): Promise<Coordinates> {
       longitude: number;
       label: string;
       approximate: boolean;
+      matchType: "exact" | "approximate";
     };
   };
   return {
@@ -98,6 +106,7 @@ export async function geocodeLocation(query: string): Promise<Coordinates> {
     longitude: payload.result.longitude,
     label: payload.result.label,
     approximate: payload.result.approximate,
+    matchType: payload.result.matchType,
   };
 }
 
