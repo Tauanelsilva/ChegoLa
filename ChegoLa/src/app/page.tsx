@@ -1,88 +1,61 @@
 import Link from "next/link";
-import { ArrowRight, MapPinned, Megaphone, Route, ShieldAlert } from "lucide-react";
-import { BrandLogo } from "@/components/brand-logo";
-import { Badge } from "@/components/ui/badge";
+import { ArrowRight, MapPinned, Megaphone, ShieldAlert } from "lucide-react";
+import { HomeMapPreview } from "@/components/home-map-preview";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-export default function Home() {
-  const steps = [
-    { icon: MapPinned, title: "Visualize", text: "Explore no mapa pontos documentados em fonte oficial e relatos salvos neste navegador." },
-    { icon: ShieldAlert, title: "Confira", text: "Diferencie registros históricos oficiais de relatos colaborativos não verificados." },
-    { icon: Megaphone, title: "Colabore", text: "Informe um alagamento por meio do formulário demonstrativo." },
-  ];
+const steps = [
+  { icon: MapPinned, title: "Visualize", text: "Veja no mapa os pontos de alagamento registrados em Itaúna." },
+  { icon: ShieldAlert, title: "Confira", text: "Abra um ponto para ver o local, a fonte e a classificação." },
+  { icon: Megaphone, title: "Colabore", text: "Informe um alagamento para ele aparecer no mapa." },
+];
 
+export default function Home() {
   return (
     <>
-      <section className="relative overflow-hidden bg-slate-950 py-20 text-white md:py-28">
-        <div className="absolute inset-0 opacity-30 [background-image:radial-gradient(circle_at_70%_25%,#0891b2_0,transparent_35%),radial-gradient(circle_at_90%_80%,#f59e0b_0,transparent_22%)]" />
-        <div className="page-shell relative grid items-center gap-12 lg:grid-cols-[1.05fr_.95fr]">
-          <div>
-            <div className="mb-7 inline-flex rounded-2xl border border-cyan-100/80 bg-gradient-to-br from-white to-cyan-50 px-5 py-4 shadow-lg shadow-cyan-950/20">
-              <BrandLogo
-                priority
-                className="w-[min(76vw,22rem)]"
-              />
-            </div>
-            <br />
-            <Badge className="mb-6 border-cyan-500/40 bg-cyan-500/10 text-cyan-200">MVP funcional • fontes identificadas</Badge>
-            <h1 className="font-heading text-5xl font-semibold leading-[1.05] tracking-tight md:text-7xl">
-              Pra você chegar lá,<br /><span className="text-cyan-400">comece por aqui.</span>
+      <section className="relative overflow-hidden bg-slate-950 text-white">
+        <div className="absolute inset-0 opacity-30 [background-image:radial-gradient(circle_at_18%_20%,#0891b2_0,transparent_32%)]" />
+        <div className="page-shell relative grid items-center gap-8 py-10 md:py-14 lg:grid-cols-2 lg:gap-12 lg:py-16">
+          <div className="min-w-0">
+            <h1 className="font-heading text-4xl font-semibold leading-[1.08] tracking-tight md:text-5xl xl:text-6xl">
+              Pra você chegar lá,
+              <br />
+              <span className="text-cyan-400">comece por aqui.</span>
             </h1>
+            <span className="mt-6 block h-1 w-12 rounded-full bg-cyan-400" aria-hidden="true" />
             <p className="mt-6 max-w-xl text-lg leading-8 text-slate-300">
-              Consulte referências históricas publicadas pela Prefeitura e compartilhe
-              relatos locais de alagamento em Itaúna. Nenhum ponto representa condição em tempo real.
+              Veja os pontos de alagamento em Itaúna e escolha o caminho antes de sair.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/mapa" className={buttonVariants({ size: "lg", className: "bg-amber-500 text-slate-950 hover:bg-amber-400" })}>Explorar o mapa <ArrowRight /></Link>
-              <Link href="/informar" className={buttonVariants({ size: "lg", variant: "outline", className: "border-white/30 bg-white/5 text-white hover:bg-white/10 hover:text-white" })}>Informar ocorrência</Link>
+              <Link href="/mapa" className={buttonVariants({ size: "lg", className: "min-h-11 bg-white! text-slate-950! hover:bg-cyan-50!" })}>
+                Explorar o mapa <ArrowRight />
+              </Link>
+              <Link href="/informar" className={buttonVariants({ size: "lg", variant: "outline", className: "min-h-11 border-white/30 bg-white/5 text-white hover:bg-white/10 hover:text-white" })}>
+                Informar ocorrência
+              </Link>
             </div>
           </div>
-
-          <div className="relative min-h-96 overflow-hidden rounded-3xl border border-white/10 bg-cyan-950 shadow-2xl">
-            <div className="absolute inset-0 opacity-40 [background-image:linear-gradient(25deg,transparent_45%,#67e8f9_46%,#67e8f9_47%,transparent_48%),linear-gradient(115deg,transparent_48%,#155e75_49%,#155e75_51%,transparent_52%)] [background-size:90px_90px]" />
-            {[
-              ["top-[23%] left-[30%]", "Alto"],
-              ["top-[55%] left-[68%]", "Médio"],
-              ["top-[72%] left-[25%]", "Alto"],
-            ].map(([position, label]) => (
-              <div key={position} className={`absolute ${position} flex items-center gap-2 rounded-full bg-white px-3 py-2 text-xs font-bold text-slate-900 shadow-lg`}>
-                <span className="size-3 rounded-full bg-amber-500 ring-4 ring-amber-500/25" /> {label}
-              </div>
-            ))}
-            <div className="absolute bottom-5 left-5 rounded-xl bg-slate-950/85 px-4 py-3">
-              <p className="text-xs uppercase tracking-widest text-cyan-300">Mapa com fontes identificadas</p>
-              <p className="mt-1 font-semibold">Itaúna, Minas Gerais</p>
-            </div>
-          </div>
+          <HomeMapPreview />
         </div>
       </section>
 
-      <section className="page-shell py-16 md:py-24">
+      <section className="page-shell py-12 md:py-16" aria-labelledby="como-funciona">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="font-bold uppercase tracking-[.2em] text-cyan-700">Como funciona</p>
-          <h2 className="section-title mt-3">Informação útil em três passos</h2>
+          <p className="eyebrow">Como funciona</p>
+          <h2 id="como-funciona" className="section-title mt-3">Informação útil em três passos</h2>
         </div>
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
           {steps.map(({ icon: Icon, title, text }) => (
-            <Card key={title} className="border-0 bg-white shadow-sm">
+            <Card key={title} className="border-0 bg-white shadow-sm transition duration-200 hover:shadow-md motion-safe:hover:-translate-y-1">
               <CardContent className="pt-6">
-                <div className="mb-5 grid size-12 place-items-center rounded-xl bg-cyan-50 text-cyan-700"><Icon className="size-6" /></div>
+                <div className="mb-4 grid size-12 place-items-center rounded-xl bg-cyan-50 text-cyan-800">
+                  <Icon className="size-6" aria-hidden="true" />
+                </div>
                 <h3 className="font-heading text-xl font-semibold">{title}</h3>
                 <p className="mt-2 leading-7 text-muted-foreground">{text}</p>
               </CardContent>
             </Card>
           ))}
-        </div>
-      </section>
-
-      <section className="bg-cyan-800 py-14 text-white">
-        <div className="page-shell flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-          <div>
-            <p className="font-heading text-2xl font-semibold">Encontrou uma área alagada?</p>
-            <p className="mt-2 text-cyan-100">O relato fica salvo somente neste navegador e aparece imediatamente no mapa.</p>
-          </div>
-          <Link href="/informar" className={buttonVariants({ size: "lg", className: "bg-white text-cyan-900 hover:bg-cyan-50" })}><Route /> Informar agora</Link>
         </div>
       </section>
     </>

@@ -1,5 +1,7 @@
 # Chegolá?
 
+**Site:** [https://chego-la.vercel.app](https://chego-la.vercel.app)
+
 MVP funcional de uma aplicação web colaborativa sobre pontos de alagamento em Itaúna/MG. Inclui identidade própria, uma referência histórica publicada pela Prefeitura e cinco fluxos responsivos: Início, Mapa Interativo, Ocorrências, Informar ocorrência e Sobre o Projeto.
 
 > “Fonte oficial” identifica a origem da publicação, não uma condição atual. Relatos criados não são verificados. A rota calculada não é uma rota segura e não deve substituir orientações oficiais.
@@ -55,14 +57,14 @@ Os scripts `postinstall`, `predev` e `prebuild` sincronizam o worker ESM do MapL
 - Se `package.json` está na raiz do repositório, mantenha **Root Directory** como `.`. O nome da pasta local `ChegoLa` no Windows não altera essa configuração.
 - Se o repositório contiver `ChegoLa/package.json`, selecione **Root Directory: `ChegoLa`**.
 - Use `npm ci` para instalar e `npm run build` para compilar.
-- A Vercel fornece uma URL `*.vercel.app`. Domínio próprio é opcional, comprado separadamente e configurado em **Settings → Domains**.
+- Site publicado: [https://chego-la.vercel.app](https://chego-la.vercel.app). Domínio próprio é opcional e se configura em **Settings → Domains**.
 - Consulte os limites e preços atuais da Vercel; o plano gratuito possui cotas e não cobre custos ou garantias dos serviços externos.
 
 Veja o plano detalhado em [`docs/proximos-passos.md`](docs/proximos-passos.md).
 
 ## Fluxos para verificar
 
-- **Mapa:** calcule uma rota entre dois endereços de Itaúna ou coordenadas; confira traçado, distância, duração e alerta de ocorrências próximas.
+- **Mapa:** calcule uma rota entre dois endereços de Itaúna ou coordenadas; confira traçado, distância, duração e alerta de ocorrências próximas. Se o caminho passar a até 200 m de um ponto cadastrado, a linha contínua é um desvio e a linha tracejada é o caminho direto.
 - **Ocorrências:** busque por texto e filtre por risco ou origem; uma busca sem resultado exibe o estado vazio.
 - **Formulário:** valide campos, salve um endereço localizável em Itaúna e confirme o novo relato na lista e no mapa.
 - **Erro:** bloqueio ou corrupção do `localStorage` produz estado de erro recuperável; falhas de tiles OSM/CARTO, Nominatim ou OSRM apresentam mensagens sem inventar resultados.

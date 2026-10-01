@@ -7,11 +7,13 @@ import { cn } from "@/lib/utils";
 type BrandLogoProps = {
   className?: string;
   priority?: boolean;
+  align?: "start" | "center";
 };
 
 export function BrandLogo({
   className,
   priority = false,
+  align = "start",
 }: BrandLogoProps) {
   const [sourceIndex, setSourceIndex] = useState(0);
   const sources = [
@@ -32,6 +34,7 @@ export function BrandLogo({
     <span
       className={cn(
         "inline-flex aspect-[1718/492] min-w-0 items-center",
+        align === "center" && "justify-center",
         className,
       )}
     >
@@ -44,7 +47,10 @@ export function BrandLogo({
           priority={priority}
           unoptimized
           onError={() => setSourceIndex((current) => current + 1)}
-          className="block size-full object-contain object-left"
+          className={cn(
+            "block size-full object-contain",
+            align === "center" ? "object-center" : "object-left",
+          )}
         />
       )}
       {!source && (

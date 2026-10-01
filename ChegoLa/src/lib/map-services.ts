@@ -14,7 +14,7 @@ export type RouteResult = {
   durationMinutes: number;
 };
 
-async function fetchWithTimeout(
+export async function fetchWithTimeout(
   input: string,
   serviceName: string,
   init: RequestInit = {},
@@ -110,35 +110,7 @@ export async function geocodeLocation(query: string): Promise<Coordinates> {
   };
 }
 
-export async function calculateRoute(
-  origin: Coordinates,
-  destination: Coordinates,
-): Promise<RouteResult> {
-  const coordinates = `${origin.longitude},${origin.latitude};${destination.longitude},${destination.latitude}`;
-  const response = await fetchWithTimeout(
-    `https://router.project-osrm.org/route/v1/driving/${coordinates}?overview=full&geometries=geojson&steps=false`,
-    "OSRM público",
-  );
-  const result = (await response.json()) as {
-    code: string;
-    routes?: Array<{
-      distance: number;
-      duration: number;
-      geometry: { coordinates: [number, number][] };
-    }>;
-  };
-  if (result.code !== "Ok" || !result.routes?.length) {
-    throw new Error("O serviço público não encontrou uma rota entre os pontos.");
-  }
-  const route = result.routes[0];
-  return {
-    coordinates: route.geometry.coordinates,
-    distanceKm: route.distance / 1000,
-    durationMinutes: route.duration / 60,
-  };
-}
-
-function haversineKm(
+export function distanceKm(
   latitudeA: number,
   longitudeA: number,
   latitudeB: number,
@@ -164,7 +136,7 @@ export function occurrencesNearRoute(
   return occurrences.filter((occurrence) =>
     routeCoordinates.some(
       ([longitude, latitude]) =>
-        haversineKm(
+        distanceKm(
           occurrence.latitude,
           occurrence.longitude,
           latitude,
