@@ -17,8 +17,8 @@ export default function InformarPage() {
           <p className="eyebrow">Participe</p>
           <h1 className="section-title mt-2">Informar uma ocorrência</h1>
           <p className="mt-3 max-w-2xl leading-7 text-muted-foreground">
-            O relato fica somente neste navegador. O endereço é geocodificado
-            para criar o ponto no mapa.
+            O relato entra na lista e no mapa para quem acessar o site. O
+            endereço é geocodificado para criar o ponto.
           </p>
           <Alert className="mt-6 border-cyan-200 bg-cyan-50">
             <Info className="text-cyan-700" />
@@ -34,8 +34,8 @@ export default function InformarPage() {
           <div className="rounded-2xl border border-cyan-200 bg-cyan-50 p-4 text-sm leading-6 text-cyan-950">
             <p className="font-heading text-base font-semibold">O que acontece com o relato</p>
             <p className="mt-2">
-              Ele aparece na lista e no mapa deste navegador. Não é enviado a
-              um servidor nem validado por órgão oficial.
+              Ele aparece na lista e no mapa deste site. Não é validado por
+              órgão oficial.
             </p>
           </div>
           <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950">

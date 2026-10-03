@@ -9,52 +9,28 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import {
-  loadAllOccurrences,
-  OCCURRENCES_CHANGED_EVENT,
-  type Occurrence,
   type OccurrenceSource,
   type RiskLevel,
 } from "@/lib/occurrences";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { useOccurrenceFeed } from "@/hooks/use-occurrences";
 
-type LoadState = "loading" | "ready" | "error";
 type RiskFilter = "Todos" | RiskLevel;
 type SourceFilter = "Todas" | OccurrenceSource;
 
 export default function OcorrenciasPage() {
-  const [occurrences, setOccurrences] = useState<Occurrence[]>([]);
-  const [loadState, setLoadState] = useState<LoadState>("loading");
-  const [error, setError] = useState("");
+  const { occurrences, status: loadState, error, reload } = useOccurrenceFeed();
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebouncedValue(query);
   const [risk, setRisk] = useState<RiskFilter>("Todos");
   const [source, setSource] = useState<SourceFilter>("Todas");
   const [created, setCreated] = useState(false);
 
-  function load() {
-    setLoadState("loading");
-    window.setTimeout(() => {
-      const result = loadAllOccurrences();
-      setOccurrences(result.occurrences);
-      setError(result.error ?? "");
-      setLoadState(result.error ? "error" : "ready");
-    }, 300);
-  }
-
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      load();
-      setCreated(
-        new URLSearchParams(window.location.search).get("created") === "1",
-      );
+      setCreated(new URLSearchParams(window.location.search).get("created") === "1");
     }, 0);
-    window.addEventListener(OCCURRENCES_CHANGED_EVENT, load);
-    window.addEventListener("storage", load);
-    return () => {
-      window.clearTimeout(timer);
-      window.removeEventListener(OCCURRENCES_CHANGED_EVENT, load);
-      window.removeEventListener("storage", load);
-    };
+    return () => window.clearTimeout(timer);
   }, []);
 
   const filtered = useMemo(() => {
@@ -79,7 +55,7 @@ export default function OcorrenciasPage() {
       <div className="mt-4 flex flex-col justify-between gap-6 md:flex-row md:items-end">
         <div>
           <Badge className="mb-3 bg-cyan-100 text-cyan-800">
-            Referência oficial histórica + relatos deste navegador
+            Referência oficial histórica + relatos do site
           </Badge>
           <h1 className="section-title">Pontos e relatos</h1>
           <p className="mt-3 max-w-2xl text-muted-foreground">
@@ -100,10 +76,10 @@ export default function OcorrenciasPage() {
       {created && (
         <Alert className="mt-6 border-emerald-300 bg-emerald-50">
           <CheckCircle2 className="text-emerald-700" />
-          <AlertTitle>Ocorrência salva neste navegador</AlertTitle>
+          <AlertTitle>Ocorrência publicada</AlertTitle>
           <AlertDescription>
-            O relato já aparece na lista e no mapa. Ele não foi enviado a um
-            servidor nem validado por órgão oficial.
+            O relato já aparece na lista e no mapa para quem acessar o site.
+            Ele não foi validado por órgão oficial.
           </AlertDescription>
         </Alert>
       )}
@@ -113,8 +89,8 @@ export default function OcorrenciasPage() {
         <AlertTitle>Aviso sobre os dados</AlertTitle>
         <AlertDescription>
           “Fonte oficial” identifica a origem da publicação, não a condição
-          atual da via. Relatos locais são autodeclarados e ficam somente neste
-          navegador. Não use esta página como única fonte para se deslocar.
+          atual da via. Relatos locais são autodeclarados e ficam visíveis
+          neste site. Não use esta página como única fonte para se deslocar.
         </AlertDescription>
       </Alert>
 
@@ -128,7 +104,7 @@ export default function OcorrenciasPage() {
         onQuery={setQuery}
         onRisk={setRisk}
         onSource={setSource}
-        onRetry={load}
+        onRetry={reload}
         onClear={() => {
           setQuery("");
           setRisk("Todos");

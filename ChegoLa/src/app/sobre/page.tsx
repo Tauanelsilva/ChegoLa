@@ -54,7 +54,7 @@ export default function SobrePage() {
           <h2 id="sobre-projeto" className="section-title mt-3 text-balance">Tecnologia com propósito local</h2>
           <div className="mt-6 space-y-5 text-pretty text-lg leading-8 text-slate-600">
             <p>Em períodos de chuva, informações locais podem ajudar no planejamento de um deslocamento. O Chegolá? diferencia referências publicadas por órgãos oficiais de relatos colaborativos não verificados.</p>
-            <p>Nesta primeira fatia funcional, há uma referência histórica da Prefeitura sobre a Avenida Jove Soares/Prainha. Novos relatos ficam no armazenamento local do navegador. Não há integração com a Defesa Civil, banco de dados, monitoramento em tempo real ou garantia de segurança.</p>
+            <p>Nesta primeira fatia funcional, há uma referência histórica da Prefeitura sobre a Avenida Jove Soares/Prainha. Novos relatos ficam visíveis para quem acessar o site. Não há integração com a Defesa Civil, monitoramento em tempo real ou garantia de segurança.</p>
           </div>
         </div>
 

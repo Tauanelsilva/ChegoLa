@@ -10,9 +10,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { submitCommunityReport } from "@/lib/community-reports";
 import { geocodeLocation } from "@/lib/map-services";
 import {
-  saveLocalOccurrence,
+  OCCURRENCES_CHANGED_EVENT,
   type Occurrence,
   type RiskLevel,
 } from "@/lib/occurrences";
@@ -77,7 +78,8 @@ export function OccurrenceForm() {
         source: "Relato local",
         createdAt: new Date().toISOString(),
       };
-      saveLocalOccurrence(occurrence);
+      await submitCommunityReport(occurrence);
+      window.dispatchEvent(new Event(OCCURRENCES_CHANGED_EVENT));
       router.push("/ocorrencias?created=1");
     } catch (caught) {
       setSubmitError(
@@ -143,7 +145,7 @@ export function OccurrenceForm() {
             <Alert variant="destructive" role="alert">
               <AlertCircle />
               <AlertTitle>Não foi possível salvar</AlertTitle>
-              <AlertDescription>{submitError} Revise o endereço e tente novamente. Nenhum dado foi enviado a um backend.</AlertDescription>
+              <AlertDescription>{submitError} Revise o endereço e tente novamente.</AlertDescription>
             </Alert>
           )}
           {submitState === "geocoding" && (
@@ -157,7 +159,7 @@ export function OccurrenceForm() {
               Cancelar
             </Link>
             <Button type="submit" size="lg" className="min-h-11 bg-cyan-700 hover:bg-cyan-800" disabled={busy}>
-              {busy ? "Salvando neste navegador…" : "Salvar ocorrência"}
+              {busy ? "Salvando…" : "Salvar ocorrência"}
             </Button>
           </div>
         </form>
