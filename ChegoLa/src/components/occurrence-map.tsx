@@ -32,7 +32,7 @@ export function OccurrenceMap({
   focusId = null,
   mapClassName = "h-[560px]",
 }: OccurrenceMapProps) {
-  const { containerRef, mapRef, markersRef, loaded, provider } = useMapCanvas(onMapNotice);
+  const { containerRef, mapRef, markersRef, loaded } = useMapCanvas(onMapNotice);
   const markersByIdRef = useRef<{ id: string; marker: Marker }[]>([]);
 
   useEffect(() => {
@@ -83,15 +83,16 @@ export function OccurrenceMap({
       <div ref={containerRef} className={cn("w-full", mapClassName)} aria-label="Mapa de Itaúna com pontos de ocorrência" />
       {!loaded && (
         <div className="absolute inset-0 grid place-items-center bg-cyan-50 px-6 text-center text-sm font-semibold text-cyan-900" role="status">
-          Carregando mapa OpenStreetMap… Se a rede bloquear os tiles principais, tentaremos uma base alternativa.
+          Carregando mapa OpenStreetMap…
         </div>
       )}
       <span className="pointer-events-none absolute left-3 top-3 z-10 rounded-md bg-slate-950/85 px-2 py-1 text-[11px] font-semibold text-white">
-        Base: {provider === "osm" ? "OpenStreetMap" : "CARTO/OSM (alternativa)"}
+        Base: OpenStreetMap
       </span>
       <div className="pointer-events-none absolute bottom-8 left-3 z-10 flex flex-wrap gap-3 rounded-lg bg-white/95 p-2 text-xs font-semibold shadow">
         <span><i className="mr-1 inline-block size-3 rounded-full border-2 border-[#f5a514] bg-[#092f5f]" /> Ponto de fonte oficial</span>
         <span><i className="mr-1 inline-block size-3 rounded-full bg-amber-600" /> Relato colaborativo</span>
+        <span><i className="mr-1 inline-block h-0.5 w-4 bg-slate-700" /> Nome de via que faltava no mapa</span>
       </div>
     </div>
   );

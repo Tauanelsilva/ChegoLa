@@ -93,6 +93,13 @@ export default function MapaPage() {
             Soares/Prainha. Publicação da Prefeitura de 07/07/2017, consultada
             em 29/09/2026; marcador aproximado em um trecho da avenida.
           </p>
+          <p className="mt-3">
+            Em 07/10/2026, 291 vias urbanas sem nome correspondente no
+            OpenStreetMap passaram a aparecer como traço escuro com o nome,
+            a partir do Cadastro Nacional de Endereços do IBGE (Censo 2022).
+            O eixo segue os endereços e é aproximado. A rota de carro continua
+            nas ruas que o OpenStreetMap consegue percorrer.
+          </p>
           <a
             href="https://www.itauna.mg.gov.br/portal/noticias/0/3/1530/equipe-do-governo-de-itauna-faz-vistoria-no-canal-da-jove-soares"
             target="_blank"

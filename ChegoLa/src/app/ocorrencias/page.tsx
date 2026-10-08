@@ -60,7 +60,8 @@ export default function OcorrenciasPage() {
           <h1 className="section-title">Pontos e relatos</h1>
           <p className="mt-3 max-w-2xl text-muted-foreground">
             Consulte pontos publicados por fonte oficial e relatos não
-            verificados. Nada é monitorado em tempo real.
+            verificados. Um relato enviado neste navegador pode ser apagado da
+            lista. Nada é monitorado em tempo real.
           </p>
         </div>
         <Link
@@ -79,6 +80,7 @@ export default function OcorrenciasPage() {
           <AlertTitle>Ocorrência publicada</AlertTitle>
           <AlertDescription>
             O relato já aparece na lista e no mapa para quem acessar o site.
+            Neste navegador, use Excluir para tirá-lo da lista e do mapa.
             Ele não foi validado por órgão oficial.
           </AlertDescription>
         </Alert>

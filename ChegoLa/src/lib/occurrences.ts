@@ -21,12 +21,13 @@ export type Occurrence = {
   locationPrecision?: LocationPrecision;
 };
 
+export const OFFICIAL_OCCURRENCE_ID = "oficial-jove-soares-prainha";
 export const STORAGE_KEY = "chegola:occurrences:v1";
 export const OCCURRENCES_CHANGED_EVENT = "chegola:occurrences-changed";
 
 export const INITIAL_OCCURRENCES: Occurrence[] = [
   {
-    id: "oficial-jove-soares-prainha",
+    id: OFFICIAL_OCCURRENCE_ID,
     place: "Avenida Jove Soares (Prainha)",
     region: "Centro",
     risk: "Não classificado",
@@ -95,6 +96,17 @@ export function loadAllOccurrences() {
     occurrences: [...local.occurrences, ...INITIAL_OCCURRENCES],
     error: local.error,
   };
+}
+
+export function removeLocalOccurrence(id: string) {
+  if (typeof window === "undefined") return;
+  const current = loadLocalOccurrences();
+  if (current.error) return;
+  const next = current.occurrences.filter((item) => item.id !== id);
+  if (next.length === current.occurrences.length) return;
+  if (next.length === 0) window.localStorage.removeItem(STORAGE_KEY);
+  else window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  window.dispatchEvent(new Event(OCCURRENCES_CHANGED_EVENT));
 }
 
 export function saveLocalOccurrence(occurrence: Occurrence) {

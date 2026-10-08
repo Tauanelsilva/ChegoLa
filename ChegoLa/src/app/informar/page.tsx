@@ -35,7 +35,8 @@ export default function InformarPage() {
             <p className="font-heading text-base font-semibold">O que acontece com o relato</p>
             <p className="mt-2">
               Ele aparece na lista e no mapa deste site. Não é validado por
-              órgão oficial.
+              órgão oficial. Neste navegador, o relato pode ser apagado depois
+              na lista de ocorrências.
             </p>
           </div>
           <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950">

@@ -9,6 +9,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "node --experimental-strip-types --import ./test/register.mjs --test src/lib/routing.test.ts",
     "postinstall": "npm run sync:maplibre",
     "sync:maplibre": "node scripts/sync-maplibre-assets.mjs"
   },

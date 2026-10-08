@@ -1,4 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import {
+  dropUnmappedNeighborhood,
+  findSupplementalStreet,
+} from "@/lib/local-streets";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -68,7 +72,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const cacheKey = `v2:${normalizeForComparison(query)}`;
+  const cacheKey = `v3:${normalizeForComparison(query)}`;
   const cached = state.cache.get(cacheKey);
   if (cached && cached.expiresAt > Date.now()) {
     return createResultResponse(query, cached);
@@ -102,6 +106,17 @@ export async function GET(request: NextRequest) {
       return createResultResponse(query, entry);
     }
 
+    const local = supplementalResult(query);
+    if (local) {
+      const entry = {
+        expiresAt: Date.now() + CACHE_TTL_MS,
+        result: local,
+        attemptedQueries,
+      };
+      state.cache.set(cacheKey, entry);
+      return createResultResponse(query, entry);
+    }
+
     const entry = {
       expiresAt: Date.now() + CACHE_TTL_MS,
       result: null,
@@ -110,6 +125,14 @@ export async function GET(request: NextRequest) {
     state.cache.set(cacheKey, entry);
     return createResultResponse(query, entry);
   } catch (error) {
+    const local = supplementalResult(query);
+    if (local) {
+      return createResultResponse(query, {
+        expiresAt: Date.now() + CACHE_TTL_MS,
+        result: local,
+        attemptedQueries,
+      });
+    }
     const message =
       error instanceof Error
         ? error.message
@@ -150,8 +173,23 @@ function createResultResponse(query: string, entry: CacheEntry) {
   );
 }
 
+function supplementalResult(query: string): GeocodeResult | null {
+  const match = findSupplementalStreet(query);
+  if (!match) return null;
+  return {
+    latitude: match.latitude,
+    longitude: match.longitude,
+    label: match.label,
+    matchedQuery: query,
+    approximate: true,
+    matchType: "approximate",
+  };
+}
+
 function buildQueryVariants(query: string) {
   const cleaned = stripItaunaSuffix(query.replace(/\s+/g, " ").trim());
+  const withoutPrainha = dropUnmappedNeighborhood(cleaned);
+  const base = withoutPrainha.length >= 3 ? withoutPrainha : cleaned;
   const variants: Array<{ query: string; approximate: boolean }> = [];
   const add = (value: string, approximate: boolean) => {
     const normalized = value.replace(/\s+/g, " ").replace(/^[,\s]+|[,\s]+$/g, "");
@@ -167,37 +205,40 @@ function buildQueryVariants(query: string) {
     }
   };
 
-  add(cleaned, false);
+  add(base, base !== cleaned);
+  if (base !== cleaned) {
+    add(cleaned.replace(/\bprainha\b/giu, "Graças"), true);
+  }
 
-  const withoutNumber = cleaned
+  const withoutNumber = base
     .replace(
       /(?:,|\s)\s*(?:n[ºo.]?\s*)?\d+(?:\s*[-–]\s*\d+)?(?:\s*\/\s*\d+)?(?:\s*,.*)?$/iu,
       "",
     )
     .trim();
-  if (withoutNumber !== cleaned) add(withoutNumber, true);
+  if (withoutNumber !== base) add(withoutNumber, true);
 
-  const withoutNeighborhoodPrefix = cleaned.replace(
+  const withoutNeighborhoodPrefix = base.replace(
     /^(?:bairro|região|regiao)\s+/iu,
     "",
   );
-  if (withoutNeighborhoodPrefix !== cleaned) {
+  if (withoutNeighborhoodPrefix !== base) {
     add(withoutNeighborhoodPrefix, true);
   }
 
-  const withoutComplement = cleaned.replace(
+  const withoutComplement = base.replace(
     /\s*(?:\([^)]*\)|,\s*(?:ap(?:to)?|apartamento|bloco|sala|fundos|pr[oó]ximo).*)$/iu,
     "",
   );
-  if (withoutComplement !== cleaned) add(withoutComplement, true);
+  if (withoutComplement !== base) add(withoutComplement, true);
 
-  const streetStart = cleaned.search(
+  const streetStart = base.search(
     /\b(?:rua|avenida|av\.?|praça|praca|travessa|alameda|rodovia|estrada|beco)\b/iu,
   );
   if (streetStart > 0) {
-    add(cleaned.slice(0, streetStart), true);
+    add(base.slice(0, streetStart), true);
     add(
-      cleaned
+      base
         .slice(streetStart)
         .replace(/(?:,|\s)\s*(?:n[ºo.]?\s*)?\d.*$/iu, ""),
       true,
@@ -308,6 +349,7 @@ function tokenCoverage(query: string, resultLabel: string) {
     "dos",
     "e",
     "em",
+    "prainha",
     "itauna",
     "mg",
     "minas",

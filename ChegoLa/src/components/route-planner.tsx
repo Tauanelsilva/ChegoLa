@@ -128,8 +128,9 @@ export function RoutePlanner({ occurrences, onRoutes }: RoutePlannerProps) {
 
       <p className="text-xs leading-5 text-muted-foreground">
         Endereço em Itaúna ou coordenadas no formato
-        <span className="font-semibold"> -20.0756, -44.5764</span>. Se o caminho
-        passar a até 200 m de um ponto cadastrado, buscamos um desvio.
+        <span className="font-semibold"> -20.0756, -44.5764</span>. “Prainha” é
+        tratado como o Bairro das Graças. Se o caminho passar a até 200 m de um
+        ponto cadastrado, buscamos um desvio.
       </p>
 
       {status === "error" && (

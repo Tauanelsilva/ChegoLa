@@ -21,7 +21,7 @@ export async function fetchWithTimeout(
   timeoutMs = 12000,
 ) {
   const controller = new AbortController();
-  const timer = window.setTimeout(() => controller.abort(), timeoutMs);
+  const timer = globalThis.setTimeout(() => controller.abort(), timeoutMs);
   try {
     const response = await fetch(input, {
       ...init,
@@ -51,7 +51,7 @@ export async function fetchWithTimeout(
     }
     throw error;
   } finally {
-    window.clearTimeout(timer);
+    globalThis.clearTimeout(timer);
   }
 }
 
@@ -128,21 +128,61 @@ export function distanceKm(
   return radius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+function distanceToSegmentKm(
+  latitude: number,
+  longitude: number,
+  start: [number, number],
+  end: [number, number],
+) {
+  const kx = Math.cos((latitude * Math.PI) / 180) * 111.32;
+  const ky = 110.574;
+  const px = longitude * kx;
+  const py = latitude * ky;
+  const ax = start[0] * kx;
+  const ay = start[1] * ky;
+  const bx = end[0] * kx;
+  const by = end[1] * ky;
+  const dx = bx - ax;
+  const dy = by - ay;
+  const lengthSq = dx * dx + dy * dy;
+  const ratio =
+    lengthSq === 0
+      ? 0
+      : Math.min(1, Math.max(0, ((px - ax) * dx + (py - ay) * dy) / lengthSq));
+  return Math.hypot(px - (ax + ratio * dx), py - (ay + ratio * dy));
+}
+
+export function distanceToRouteKm(
+  latitude: number,
+  longitude: number,
+  route: [number, number][],
+) {
+  if (route.length === 0) return Number.POSITIVE_INFINITY;
+  if (route.length === 1) {
+    return distanceKm(latitude, longitude, route[0][1], route[0][0]);
+  }
+  let best = Number.POSITIVE_INFINITY;
+  for (let index = 1; index < route.length; index += 1) {
+    best = Math.min(
+      best,
+      distanceToSegmentKm(latitude, longitude, route[index - 1], route[index]),
+    );
+  }
+  return best;
+}
+
 export function occurrencesNearRoute(
   occurrences: Occurrence[],
   routeCoordinates: [number, number][],
   thresholdKm = 0.2,
 ) {
-  return occurrences.filter((occurrence) =>
-    routeCoordinates.some(
-      ([longitude, latitude]) =>
-        distanceKm(
-          occurrence.latitude,
-          occurrence.longitude,
-          latitude,
-          longitude,
-        ) <= thresholdKm,
-    ),
+  return occurrences.filter(
+    (occurrence) =>
+      distanceToRouteKm(
+        occurrence.latitude,
+        occurrence.longitude,
+        routeCoordinates,
+      ) <= thresholdKm,
   );
 }
 

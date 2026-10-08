@@ -39,6 +39,32 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="page-shell py-12 md:py-16" aria-labelledby="atualizacao-ruas">
+        <article className="rounded-3xl border bg-white p-6 shadow-sm md:p-10">
+          <p className="eyebrow">Atualização · 7 de outubro de 2026</p>
+          <h2 id="atualizacao-ruas" className="section-title mt-3 text-balance">
+            Ruas que faltavam no mapa agora estão escritas
+          </h2>
+          <div className="mt-6 max-w-3xl space-y-4 text-lg leading-8 text-slate-600">
+            <p>
+              291 vias urbanas de Itaúna que constam no Cadastro Nacional de Endereços do IBGE, do Censo 2022, e não tinham nome correspondente no OpenStreetMap passaram a aparecer no mapa.
+            </p>
+            <p>
+              Cada uma entra como um traço escuro com o nome escrito, visível ao aproximar o zoom. Na Prainha, tratada no mapa como Bairro das Graças, isso inclui ruas como Gioconda Corradi e Benfica Magalhães e as praças do bairro.
+            </p>
+            <p>
+              O marcador continua reservado aos pontos de alagamento. O traço segue os endereços do IBGE, então a posição é aproximada. A rota de carro continua pelas ruas que o OpenStreetMap consegue percorrer. Buscar uma dessas ruas pelo nome leva ao ponto aproximado.
+            </p>
+          </div>
+          <Link
+            href="/mapa"
+            className={buttonVariants({ size: "lg", className: "mt-8 min-h-11 bg-cyan-700! text-white! hover:bg-cyan-800!" })}
+          >
+            Ver no mapa <ArrowRight />
+          </Link>
+        </article>
+      </section>
+
       <section className="page-shell py-12 md:py-16" aria-labelledby="como-funciona">
         <div className="mx-auto max-w-2xl text-center">
           <p className="eyebrow">Como funciona</p>

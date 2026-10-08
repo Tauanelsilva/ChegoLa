@@ -14,9 +14,14 @@ const limiter = globalThis as typeof globalThis & {
 
 export async function GET() {
   try {
-    const occurrences = await getReportStore().list();
+    const store = getReportStore();
+    const [occurrences, openDeletionIds, hiddenIds] = await Promise.all([
+      store.list(),
+      store.unprotectedIds(),
+      store.hiddenIds(),
+    ]);
     return NextResponse.json(
-      { occurrences },
+      { occurrences, openDeletionIds, hiddenIds },
       { headers: { "Cache-Control": "no-store" } },
     );
   } catch {
@@ -42,7 +47,10 @@ export async function POST(request: NextRequest) {
       request.headers.get("idempotency-key"),
     );
     const stored = await getReportStore().save(report, report.id);
-    return NextResponse.json({ occurrence: stored }, { status: 201 });
+    return NextResponse.json(
+      { occurrence: stored.occurrence, deleteToken: stored.deleteToken },
+      { status: 201 },
+    );
   } catch (caught) {
     if (caught instanceof ReportError) {
       return NextResponse.json({ error: caught.message }, { status: caught.status });

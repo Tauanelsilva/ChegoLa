@@ -1,8 +1,13 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
-import { CalendarClock, ChevronRight, ExternalLink, MapPin } from "lucide-react";
+import { CalendarClock, ChevronRight, ExternalLink, MapPin, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import type { Occurrence, RiskLevel } from "@/lib/occurrences";
+import { withdrawCommunityReport } from "@/lib/community-reports";
+import { OCCURRENCES_CHANGED_EVENT, type Occurrence, type RiskLevel } from "@/lib/occurrences";
 
 const RISK_CLASSES: Record<RiskLevel, string> = {
   "Não classificado": "bg-slate-100 text-slate-700",
@@ -12,6 +17,9 @@ const RISK_CLASSES: Record<RiskLevel, string> = {
 };
 
 export function OccurrenceCard({ item }: { item: Occurrence }) {
+  const [confirming, setConfirming] = useState(false);
+  const [removing, setRemoving] = useState(false);
+  const [error, setError] = useState("");
   const published = new Intl.DateTimeFormat("pt-BR").format(
     new Date(`${item.date}T${item.time}:00`),
   );
@@ -25,7 +33,7 @@ export function OccurrenceCard({ item }: { item: Occurrence }) {
             <h2 className="font-heading text-xl font-semibold">
               <Link
                 href={`/mapa?foco=${item.id}`}
-                className="rounded-sm underline-offset-4 after:absolute after:inset-0 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-700"
+                className="rounded-sm underline-offset-4 after:absolute after:inset-0 after:z-0 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-700"
               >
                 {item.place}
                 <ChevronRight aria-hidden="true" className="ml-1 inline size-5 text-cyan-700" />
@@ -69,6 +77,57 @@ export function OccurrenceCard({ item }: { item: Occurrence }) {
             )}
           </div>
         )}
+        <div className="relative z-20 mt-4 flex flex-wrap items-center gap-2">
+          {confirming ? (
+            <>
+              <p className="w-full text-sm text-slate-600">Esta ocorrência sai da lista e do mapa.</p>
+              <Button
+                type="button"
+                variant="destructive"
+                className="min-h-11"
+                disabled={removing}
+                aria-label={`Confirmar exclusão de ${item.place}`}
+                onClick={() => {
+                  setRemoving(true);
+                  setError("");
+                  void withdrawCommunityReport(item.id)
+                    .then(() => {
+                      window.dispatchEvent(new Event(OCCURRENCES_CHANGED_EVENT));
+                    })
+                    .catch((caught: unknown) => {
+                      setError(caught instanceof Error ? caught.message : "Não foi possível excluir a ocorrência.");
+                      setRemoving(false);
+                    });
+                }}
+              >
+                <Trash2 /> {removing ? "Excluindo…" : "Confirmar exclusão"}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="min-h-11"
+                disabled={removing}
+                onClick={() => {
+                  setConfirming(false);
+                  setError("");
+                }}
+              >
+                Cancelar
+              </Button>
+            </>
+          ) : (
+            <Button
+              type="button"
+              variant="outline"
+              className="min-h-11"
+              aria-label={`Excluir ${item.place}`}
+              onClick={() => setConfirming(true)}
+            >
+              <Trash2 /> Excluir
+            </Button>
+          )}
+          {error && <p className="w-full text-sm font-semibold text-red-700" role="alert">{error}</p>}
+        </div>
       </CardContent>
     </Card>
   );

@@ -2,7 +2,8 @@ import { distanceKm } from "@/lib/map-services";
 import type { Occurrence } from "@/lib/occurrences";
 import type { RoutePoint } from "@/lib/osrm-route";
 
-const DETOUR_KM = 0.7;
+const DETOUR_DISTANCES_KM = [0.5, 1.1];
+const DETOUR_TURNS = [90, -90, 115, -115];
 
 function bearingDegrees(
   latitudeA: number,
@@ -76,7 +77,13 @@ export function detourPoints(
   const to = closestIndex === route.length - 1 ? route[closestIndex] : route[nextIndex];
   const bearing = bearingDegrees(from[1], from[0], to[1], to[0]);
 
-  return [90, -90].map((turn) =>
-    offsetKm(anchor.latitude, anchor.longitude, bearing + turn, DETOUR_KM),
-  );
+  const points: RoutePoint[] = [];
+  for (const distance of DETOUR_DISTANCES_KM) {
+    for (const turn of DETOUR_TURNS) {
+      points.push(
+        offsetKm(anchor.latitude, anchor.longitude, bearing + turn, distance),
+      );
+    }
+  }
+  return points;
 }
